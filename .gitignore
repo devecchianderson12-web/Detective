@@ -1,0 +1,8 @@
+.buildozer/
+bin/
+__pycache__/
+*.pyc
+data/game.dat
+data/c*.dat
+data/characters.dat
+data/game_err.dat

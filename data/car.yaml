@@ -1,0 +1,319 @@
+width: 3.0
+acceleration :
+  #gears : [20.5, 5, 2.3, 1.7]
+  gears : [18, 7, 3.5, 2.1]
+  power : 14
+  #power : 12.4
+drag: 0.9
+#drag : 1.7
+#rolling_resistance : 85
+rolling_resistance: 85
+restitution: 0.5 # Define que tan elásticas son las colisiones, de 0 a 1, en 0 se quedan pegadas, 
+               # en 1 rebotan con la misma velocidad con la que venían
+tyres: # Define la posición de las ruedas con respecto al centro del auto
+  left: 1.5 # Es cuánto a la izquierda se encuentra la rueda izquierda
+  right: 1.5 # Lo mismo con la derecha
+length: 8
+mass : 2000
+break : 150
+cornering :
+  slow: 0.55
+  fast: 0.48
+  speed: 4.5
+extra_resistance : 30
+max_rpm: 300
+
+min_material_effect_speed: 20 # A qué velocidad deja de actuar el efecto del material
+
+max_wheels_speed: 100 # A qué velocidad las ruedas quedan en su velocidad máxima de giro
+max_cornering_speed: 100 # Hasta esta velocidad se limita como se muestra lo que dobla el auto
+
+sprites:
+- both:
+    car:
+      image: images/p3_car_avatar_001.gif
+      y_translation: 13
+    wheels:
+    - texture: 
+        image: images/p3_car_avatar_001_wheels_1.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_001_wheels_2.gif
+        y_translation: 13
+      duration: 50
+    siren: # Es la posición de la sirena para esta imágen con respecto al punto del centro inferior de la pantalla
+      x: -28
+      y: -139
+  to: 0.01
+  material_translation: 0
+- left:
+    car:
+      image: images/p3_car_avatar_002.gif
+      y_translation: 13
+    wheels:
+    - texture: 
+        image: images/p3_car_avatar_002_wheels_1.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_002_wheels_2.gif
+        y_translation: 13
+      duration: 50
+    siren:
+      x: -26
+      y: -139
+  right: 
+    car:
+      image: images/p3_car_avatar_004.gif
+      y_translation: 13
+    wheels:
+    - texture: 
+        image: images/p3_car_avatar_004_wheels_1.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_004_wheels_2.gif
+        y_translation: 13
+      duration: 50
+    siren:
+      x: -31
+      y: -139
+  to: 0.8
+  material_translation: 5
+- left:
+    car:
+      image: images/p3_car_avatar_003.gif
+      y_translation: 13
+    wheels:
+    - texture: 
+        image: images/p3_car_avatar_003_wheels_1.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_003_wheels_2.gif
+        y_translation: 13
+      duration: 50
+    siren:
+      x: -24
+      y: -139
+  right:
+    car:
+      image: images/p3_car_avatar_005.gif
+      y_translation: 13
+    wheels:
+    - texture: 
+        image: images/p3_car_avatar_005_wheels_1.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_005_wheels_2.gif
+        y_translation: 13
+      duration: 50
+    siren:
+      x: -33
+      y: -139
+  to: 1
+  material_translation: 10
+  
+
+finishing:
+  deacceleration: 100 # La aceleración del frenado cuando el auto está al lado del ladrón
+  maneuver_time: 0.28 # Tiempo que demora en cerrar al ladrón
+  close_distance: 3.5 # La distancia a la que el auto se acerca al ladrón antes de frenar
+  maneuver_speed: 18 # La velocidad que lleva el auto cuando para cerrar al ladrón
+  maneuver_front_distance: 3 # Que tan adelante queda del ladrón al cerrarlo
+  maneuver_side_distance: 1.5 # Que tan alejado va a quedar el auto del centro del auto del ladrón al cerrarlo
+
+hard_crash:
+  duration: 1 # máximo tiempo que pasa hasta que se puede arrancar de vuelta
+  left:
+    animation:
+    - texture: 
+        image: images/p3_car_avatar_spinning_001.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_002.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_003.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_004.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_005.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_006.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_007.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_008.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_009.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_010.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_011.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_012.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_013.gif
+        y_translation: 13
+      duration: 50
+  right:
+    animation:
+    - texture: 
+        image: images/p3_car_avatar_spinning_013.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_012.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_011.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_010.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_009.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_008.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_007.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_006.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_005.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_004.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_003.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_002.gif
+        y_translation: 13
+      duration: 50
+    - texture: 
+        image: images/p3_car_avatar_spinning_001.gif
+        y_translation: 13
+      duration: 50
+
+caught_thief:
+  right:
+    animation:
+      - texture: images/p3_car_avatar_catch_toleft_001.gif
+        duration: 40
+      - texture: images/p3_car_avatar_catch_toleft_002.gif
+        duration: 50
+      - texture: images/p3_car_avatar_catch_toleft_003.gif
+        duration: 60
+  left:
+    animation:
+      - texture: images/p3_car_avatar_catch_toright_001.gif
+        duration: 40
+      - texture: images/p3_car_avatar_catch_toright_002.gif
+        duration: 50
+      - texture: images/p3_car_avatar_catch_toright_003.gif
+        duration: 60
+
+smoke: # Es el efecto del humo cuando arranca el auto o se hace algún cambio
+  animation: # La definición de una animación, un conjunto de frames, cada uno con su imagen y su tiempo, en milisegundos
+  - texture: images/p3_fx_carsmoke_001.gif
+    duration: 30
+  - texture: images/p3_fx_carsmoke_002.gif
+    duration: 30
+  - texture: images/p3_fx_carsmoke_003.gif
+    duration: 60
+  - texture: images/p3_fx_carsmoke_004.gif
+    duration: 60
+  - texture: images/p3_fx_carsmoke_005.gif
+    duration: 100
+  - texture: images/p3_fx_carsmoke_006.gif
+    duration: 100
+  - texture: images/p3_fx_carsmoke_007.gif
+    duration: 100  
+
+siren:
+  animation: # Esta es la animación de la sirena
+  - texture: images/p3_car_siren_001.gif
+    duration: 250
+  - texture: images/p3_car_siren_002.gif
+    duration: 20
+  - texture: images/p3_car_siren_003.gif
+    duration: 20
+  - texture: images/p3_car_siren_004.gif
+    duration: 20
+  - texture: images/p3_car_siren_005.gif
+    duration: 20
+  - texture: images/p3_car_siren_006.gif
+    duration: 20
+  - texture: images/p3_car_siren_007.gif
+    duration: 50
+  - texture: images/p3_car_siren_008.gif
+    duration: 20
+  - texture: images/p3_car_siren_009.gif
+    duration: 250
+  - texture: images/p3_car_siren_010.png
+    duration: 20
+  - texture: images/p3_car_siren_011.png
+    duration: 20
+  - texture: images/p3_car_siren_012.png
+    duration: 20
+  - texture: images/p3_car_siren_013.png
+    duration: 20
+  - texture: images/p3_car_siren_014.png
+    duration: 20
+  - texture: images/p3_car_siren_015.png
+    duration: 20
+  start_distance: 150 # La distancia a la que tiene que estar el auto del ladrón para que prenda la sirena
+
+sounds:
+  engine:
+    sound: sounds/p3_Car_Engine.wav
+    volume: 0.5 # volumen va de 0 a 1, por defecto es 1 si no aparece.
+  break:
+    sound: sounds/p3_car_tires.wav
+  light_crash:
+    sound: sounds/P3_Car_Crash1.wav
+  hard_crash: sounds/P3_Car_Crash2.wav
+  siren: 
+    sound: sounds/p3_car_siren.wav
+    volume: 0.6

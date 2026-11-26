@@ -1,0 +1,132 @@
+# Todos los objetos se ordenan con respecto a un z, mientras más chico el z más cerca de la pantalla
+# Los static son imágenes fijas que van en el gui, que no van a tener interacción
+statics:
+- texture: images/p3_gui_giffed_back.gif # la imagen a mostrar
+  z: 6 # orden con respecto a la profundidad
+  pos: # posición del objeto en la pantalla siendo el (0,0) la esquina superior izquierda
+    x: 0
+    y: 0
+- texture: images/p3_kilometers_km.gif # la imagen a mostrar
+  z: 1 # orden con respecto a la profundidad
+  pos: # posición del objeto en la pantalla siendo el (0,0) la esquina superior izquierda
+    x: 129
+    y: 405
+#
+#
+#
+#
+# la barra de nafta indica el tiempo que queda
+fuel_bar:
+  z: 4
+  color: FAEA00 # El color en hexa del contenido de la barra
+  pos:
+    x: 154
+    y: 28
+# Las siguientes son las dimensiones de la barra llena
+  w: 101
+  h: 7
+  end: images/p3_gui_giffed_fuelbar_corner.gif # Esta es la imagen que se muestra en la punta de la barra, su posición la toma de la punta de la barra en x, en y es igual a la de la barra
+#
+#
+#
+# La barra de distancia indica cuanto queda para el ladrón
+distance_bar:
+  z: 4
+  filler: images/p3_gui_giffed_distancebar.gif # Esta es la imagen con la que se llena la barra
+  pos: # La posición del filler
+    x: 343
+    y: 28
+  max_distance: 500 # Esta es la distancia máxima que se muestra con el ladrón, si el ladrón se encuentra fuera de esta distancia entonces la barra está siempre llena
+  end: # Esta es la imagen que se muestra en la punta de la barra, su posición en x depende de la posición de la barra
+    z: 2.5
+    texture: images/p3_gui_giffed_car.gif
+    diff_x: -8 # Esta es la diferencia que tiene en x con respecto a la punta de la barra
+    pos: # La posición en y
+      y: 21
+#
+#
+mileometer:
+  speed_ratio: 0.7 # Este es el factor por el cual se multiplica la velocidad real para obtener el valor que se muestra en el cuenta kilómetros
+  numbers: [images/p3_kilometers_0.gif, images/p3_kilometers_1.gif, images/p3_kilometers_2.gif, images/p3_kilometers_3.gif, images/p3_kilometers_4.gif, images/p3_kilometers_5.gif, images/p3_kilometers_6.gif, images/p3_kilometers_7.gif, images/p3_kilometers_8.gif, images/p3_kilometers_9.gif] # Estos son las imágenes de los números, ordenados de menor a mayor
+  pos: # Las posiciones de los dígitos, comenzando por el de más a la derecha
+  - x: 83
+    y: 377
+  - x: 45
+    y: 377
+  - x: 8
+    y: 377
+
+exit_dialog:
+  background: 
+    src: images/p3_quit_game_gifed_backdrop.gif
+    pos:
+      x: 138
+      y: 116
+  yes:
+    src: images/p3_quit_game_gifed_btn_yes_rollover.gif
+    pos:
+      x: 226
+      y: 270
+  no:
+    src: images/p3_quit_game_gifed_btn_no_rollover.gif
+    pos:
+      x: 308
+      y: 270
+#
+#
+low_fuel_warning:
+  texture: images/p3_warning_signs_lowfuel.gif
+  x: 179
+  y: 98
+  available: 350
+  unavailable: 350
+  times: 8
+#
+#
+no_fuel_sign:
+  texture: images/p3_warning_signs_nofuel.gif
+  x: 193
+  y: 95
+  available: 250
+  unavailable: 0
+#
+#
+win_sign:
+  texture: images/p3_warning_signs_arrested.gif
+  x: 204
+  y: 93
+  available: 250
+  unavailable: 0
+  wait: 1280	
+#
+#
+thief_near_sign:
+  texture: images/p3_warning_signs_thief.gif
+  x: 190
+  y: 93
+  available: 250
+  unavailable: 250
+  times: 8
+#
+#
+fuel_warning_time: 18
+thief_warning_distance: 150
+low_fuel_sound:
+  sound: sounds/p3_warning.wav
+  available: 350
+  unavailable: 350
+  times: 8
+#
+#
+thief_avatar:
+  pos:
+    x: 498
+    y: 11
+  z: 7
+#
+#
+player_avatar:
+  z: 8 # orden con respecto a la profundidad
+  pos: # posición del objeto en la pantalla siendo el (0,0) la esquina superior izquierda
+    x: 16
+    y: 14

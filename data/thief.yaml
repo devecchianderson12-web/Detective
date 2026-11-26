@@ -1,0 +1,118 @@
+sideways_speed : 7 # la velocidad con la que esquiva otros autos
+speed: 145 # La velocidad a la que corre
+engine_sound:
+textures:
+  violet:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_enemy1_pos_001.gif
+      height: 2.5
+      width: 4.5
+  - to: 15
+    left: 
+      texture: images/p3_car_enemy1_pos_002.gif
+      height: 2.5
+      width: 4.5
+    right: 
+      texture: images/p3_car_enemy1_pos_005.gif
+      height: 2.5
+      width: 4.5
+  - to: 90
+    left: 
+      texture: images/p3_car_enemy1_pos_003.gif
+      height: 2.5
+      width: 4.5
+    right: 
+      texture: images/p3_car_enemy1_pos_006.gif
+      height: 2.5
+      width: 4.5
+  green:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_enemy2_pos_001.gif
+      height: 2.5
+      width: 4.5
+  - to: 15
+    left: 
+      texture: images/p3_car_enemy2_pos_002.gif
+      height: 2.5
+      width: 4.5
+    right: 
+      texture: images/p3_car_enemy2_pos_005.gif
+      height: 2.5
+      width: 4.5
+  - to: 90
+    left: 
+      texture: images/p3_car_enemy2_pos_003.gif
+      height: 2.5
+      width: 4.5
+    right: 
+      texture: images/p3_car_enemy2_pos_006.gif
+      height: 2.5
+      width: 4.5
+  blue:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_enemy3_pos_001.gif
+      height: 2.5
+      width: 4.5
+  - to: 15
+    left: 
+      texture: images/p3_car_enemy3_pos_002.gif
+      height: 2.5
+      width: 4.5
+    right: 
+      texture: images/p3_car_enemy3_pos_005.gif
+      height: 2.5
+      width: 4.5
+  - to: 90
+    left: 
+      texture: images/p3_car_enemy3_pos_003.gif
+      height: 2.5
+      width: 4.5
+    right: 
+      texture: images/p3_car_enemy3_pos_006.gif
+      height: 2.5
+      width: 4.5
+arrow:
+  animation:
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -14
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -25
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -33
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -38
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -40
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -38
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -33
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -25
+  - texture: images/p3_warning_signs_arrow_006.png
+    duration: 40
+    pixel_translation:
+      y: -14
+  y: 3
+width: 2 # Este es el ancho que se usa para las colisiones

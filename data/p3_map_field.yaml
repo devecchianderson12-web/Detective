@@ -1,0 +1,386 @@
+debug_physics: false # si se muestra el debug de la física
+width: 15
+time: 180000 # El tiempo del mapa en milisegundos 
+exit_time: 3000 # El tiempo que se queda luego de atrapar al ladrón o perder
+music:
+  loop:
+    sound: sounds/p3_music_full.ogg
+    volume: 0.6
+    loop_start: 5.121
+  win:
+    sound: sounds/p3_music_win.ogg
+    volume: 0.6
+  lose:
+    sound: sounds/p3_music_lose.ogg
+    volume: 0.6
+#
+#
+#FONDO (lo primero es lo de mas atrás)
+#
+sky: 
+  color : 232442 # Es el color de fondo
+  backgrounds:
+    night:
+      texture : images/p3_back_night.jpg
+      speed : 120
+    noon:
+      texture : images/p3_back_day.jpg
+      speed : 120
+    afternoon:
+      texture : images/p3_back_dusk.jpg
+      speed : 120
+  layers : 
+  - texture : images/p3_horz_mounts.gif
+    speed : 200
+#
+#
+#
+#TERRENO!
+terrain:
+- texture: 
+    image: images/p3_floor_field_001_a.jpg
+    w: 86
+    h: 10
+  length: 100000
+  materials:
+    left:
+    - from: 7
+      to: 11
+      animation:
+      - texture: images/p3_fx_mudborders_001.gif
+        duration: 41
+      - texture: images/p3_fx_mudborders_002.gif
+        duration: 41
+      - texture: images/p3_fx_mudborders_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+    - from: 11
+      to: 50
+      animation:
+      - texture: images/p3_fx_grass_001.gif
+        duration: 41
+      - texture: images/p3_fx_grass_002.gif
+        duration: 41
+      - texture: images/p3_fx_grass_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+    right:
+    - from: 7
+      to: 11
+      animation:
+      - texture: images/p3_fx_mudborders_001.gif
+        duration: 41
+      - texture: images/p3_fx_mudborders_002.gif
+        duration: 41
+      - texture: images/p3_fx_mudborders_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+    - from: 11
+      to: 50
+      animation:
+      - texture: images/p3_fx_grass_001.gif
+        duration: 41
+      - texture: images/p3_fx_grass_002.gif
+        duration: 41
+      - texture: images/p3_fx_grass_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+  left_fill: 4e7c3c
+  right_fill: 4e7c3c
+#
+#
+#PUNTOS DONDE APARECE EL TRAFICO
+#
+lanes: [3.5, -3.5]
+#
+#
+#
+#CARRETERA
+#
+pieces:
+### RECTAS
+  - road:
+    - segment:
+        width: 7
+        length: 200
+  - road:
+    - segment:
+        width: 7
+        length: 350
+  - road:
+    - segment:
+        width: 7
+        length: 500
+    objects:
+    - x: 8.5
+      from: 0
+      to: 100
+      h: 5
+      w: 4.3
+      dz: 90
+      body:
+        w: 3
+        x: 0
+      texture: images/p3_item_bigsign_001.gif
+### CURVAS
+
+### CURVA CERRADA CORTA DERECHA
+  - road:
+    - corner:
+        width: 7
+        length: 200
+        direction: right
+        radius: 400
+    objects:
+    - x: -9.3
+      from: 0
+      to: 200
+      h: 2.5
+      w: 1.1
+      dz: 8
+      texture: images/p3_item_turnsign_001.gif
+    - x: 10.5
+      from: -100
+      to: 0
+      h: 5.2
+      w: 2.1
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_curve_sign_003.gif
+
+#### CURVA CERRADA CORTA IZQUIERDA
+  - road:
+    - corner:
+        width: 7
+        length: 200
+        direction: left
+        radius: 400
+    objects:
+    - x: 9.3
+      from: 0
+      to: 200
+      h: 2.5
+      w: 1.1
+      dz: 8
+      texture: images/p3_item_turnsign_002.gif
+    - x: 10.5
+      from: -100
+      to: 0
+      h: 5.2
+      w: 2.1
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_curve_sign_004.gif
+
+#### CURVA LARGA DERECHA
+  - road:
+    - corner:
+        width: 7
+        length: 500
+        direction: right
+        radius: 750
+    objects:
+    - x: 10.5
+      from: -100
+      to: 0
+      h: 5.2
+      w: 2.1
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_curve_sign_001.gif
+
+#### CURVA LARGA IZQUIERDA
+  - road:
+    - corner:
+        width: 7
+        length: 500
+        direction: left
+        radius: 750
+    objects:
+    - x: 10.5
+      from: -100
+      to: 0
+      h: 5.2
+      w: 2.1
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_curve_sign_002.gif
+#### CHICANA DER IZQ
+  - road:
+    - corner:
+        width: 7
+        length: 100
+        direction: right
+        radius: 400
+    - corner:
+        width: 7
+        length: 100
+        direction: left
+        radius: 400
+    objects:
+    - x: 10.5
+      from: -100
+      to: 0
+      h: 5.2
+      w: 2.1
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_curve_sign_005.gif
+#### CHICANA DER IZQ
+  - road:
+    - corner:
+        width: 7
+        length: 100
+        direction: left
+        radius: 400
+    - corner:
+        width: 7
+        length: 100
+        direction: right	
+        radius: 400
+    objects:
+    - x: 10.5
+      from: -100
+      to: 0
+      h: 5.2
+      w: 2.1
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_curve_sign_006.gif
+
+#### OBJETOS FIJOS
+objects:
+  - x: 8
+    from: 0
+    to: 100000
+    h: 2.3
+    w: 1
+    dz: 1000
+    body:
+      w: 0.3
+      x: 0
+    texture: images/p3_item_kmstick_001.gif
+
+#### ALEATORIOS
+
+random_objects:
+#### IZQUIERDA
+  left:
+#### VACAS
+  - length: 500
+    objects:
+    - x: -13
+      h: 2.8
+      w: 0.9
+      dz: 20
+      body:
+        w: 0.5
+        x: 0
+      texture: images/p3_item_stick_001.gif
+    - x: -20
+      h: 4
+      w: 5.3
+      dz: 316.7
+      body:
+        w: 5
+        x: 0
+      texture: images/p3_item_cow_001.gif
+    - x: -20
+      h: 4
+      w: 5.3
+      dz: 60
+      body:
+        w: 5
+        x: 0
+      texture: images/p3_item_cow_003.gif
+#### PINOS
+  - length: 500
+    objects:
+    - x: -20
+      h: 18.3
+      w: 15
+      dz: 18.3
+      body:
+        w: 11
+        x: 0
+      texture: images/p3_item_pinetrees_001.gif
+
+#### ARBOLES
+  - length: 500
+    objects:
+    - x: -19.5
+      h: 14
+      w: 13.2
+      dz: 23.3
+      body:
+        w: 7
+        x: 0
+      texture: images/p3_item_tree_002.gif
+#### DERECHA
+  right:
+#### VACAS
+  - length: 500
+    objects:
+    - x: 13
+      h: 2.8
+      w: 0.9
+      dz: 20
+      body:
+        w: 0.5
+        x: 0
+      texture: images/p3_item_stick_001.gif
+    - x: 20
+      h: 4
+      w: 5.3
+      dz: 316.7
+      body:
+        w: 5
+        x: 0
+      texture: images/p3_item_cow_001.gif
+    - x: 20
+      h: 4
+      w: 5.3
+      dz: 60
+      body:
+        w: 5
+        x: 0
+      texture: images/p3_item_cow_003.gif
+#### PINOS
+  - length: 500
+    objects:
+    - x: 20
+      h: 18.3
+      w: 15
+      dz: 18.3
+      body:
+        w: 11
+        x: 0
+      texture: images/p3_item_pinetrees_001.gif
+
+#### ARBOLES
+  - length: 500
+    objects:
+    - x: 19.5
+      h: 14
+      w: 13.2
+      dz: 23.3
+      body:
+        w: 7
+        x: 0
+      texture: images/p3_item_tree_002.gif

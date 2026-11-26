@@ -1,0 +1,345 @@
+debug_physics: false # si se muestra el debug de la física
+width: 15
+time: 180000
+exit_time: 3000 # El tiempo que se queda luego de atrapar al ladrón o perder
+music:
+  loop:
+    sound: sounds/p3_music_full.ogg
+    volume: 0.6
+    loop_start: 5.121
+  win:
+    sound: sounds/p3_music_win.ogg
+    volume: 0.6
+  lose:
+    sound: sounds/p3_music_lose.ogg
+    volume: 0.6
+  start:
+    sound: sounds/p3_music_intro.ogg
+    volume: 0.6
+#
+#
+#FONDO (lo primero es lo de mas atrás)
+#
+sky: 
+  color : 232442 # Es el color de fondo
+  backgrounds:
+    night:
+      texture : images/p3_back_night.jpg
+      speed : 120
+    noon:
+      texture : images/p3_back_day.jpg
+      speed : 120
+    afternoon:
+      texture : images/p3_back_dusk.jpg
+      speed : 120
+  layers : 
+  - texture : images/p3_horz_seaside.gif
+    speed : 200
+#
+#
+#
+#TERRENO!
+terrain:
+- texture: 
+    image: images/p3_floor_beach_002_a.jpg
+    w: 86
+    h: 10
+  length: 100000
+  materials:
+    left:
+    - from: 8
+      to: 15
+      animation:
+      - texture: images/p3_fx_sand_001.gif
+        duration: 41
+      - texture: images/p3_fx_sand_002.gif
+        duration: 41
+      - texture: images/p3_fx_sand_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+    - from: 15
+      to: 50
+      animation:
+      - texture: images/p3_fx_grass_001.gif
+        duration: 41
+      - texture: images/p3_fx_grass_002.gif
+        duration: 41
+      - texture: images/p3_fx_grass_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+    right:
+    - from: 8
+      to: 50
+      animation:
+      - texture: images/p3_fx_sand_001.gif
+        duration: 41
+      - texture: images/p3_fx_sand_002.gif
+        duration: 41
+      - texture: images/p3_fx_sand_003.gif
+        duration: 41
+      sound_effect: sounds/p3_car_rough_terrain.wav
+      rolling_resistance: 300 
+  left_fill: 5f9e43
+  right_fill: 366ce8
+#
+#
+#PUNTOS DONDE APARECE EL TRAFICO
+#
+lanes: [3.5, -3.5]
+#
+#
+#
+#CARRETERA
+#
+pieces:
+
+### RECTAS
+  - road:
+    - segment:
+        width: 7
+        length: 200
+  - road:
+    - segment:
+        width: 7
+        length: 350
+  - road:
+    - segment:
+        width: 7
+        length: 500
+    objects:
+    - x: -9
+      from: 0
+      to: 100
+      h: 5
+      w: 1.6
+      dz: 90
+      body:
+        w: 0.2
+        x: 0
+      texture: images/p3_item_sign_001.gif
+
+### CURVAS
+
+### CURVA CERRADA CORTA DERECHA
+  - road:
+    - corner:
+        width: 7
+        length: 200
+        direction: right
+        radius: 400
+#### CURVA CERRADA CORTA IZQUIERDA
+  - road:
+    - corner:
+        width: 7
+        length: 200
+        direction: left
+        radius: 400
+#### CURVA LARGA DERECHA
+  - road:
+    - corner:
+        width: 7
+        length: 500
+        direction: right
+        radius: 750
+#### CURVA LARGA IzQUIERDA
+  - road:
+    - corner:
+        width: 7
+        length: 500
+        direction: left
+        radius: 750
+#### CHICANA DER IZQ
+  - road:
+    - corner:
+        width: 7
+        length: 100
+        direction: right
+        radius: 400
+    - corner:
+        width: 7
+        length: 100
+        direction: left
+        radius: 400
+#### CHICANA DER IZQ
+  - road:
+    - corner:
+        width: 7
+        length: 100
+        direction: left
+        radius: 400
+    - corner:
+        width: 7
+        length: 100
+        direction: right	
+        radius: 400
+#### OBJETOS FIJOS
+objects:
+  - x: -9
+    from: 0
+    to: 100000
+    h: 18
+    w: 5
+    dz: 60
+    body:
+      w: 0.8
+      x: -2
+    texture: images/p3_item_lightposts_001.gif
+  - x: 9
+    from: 0
+    to: 100000
+    h: 18
+    w: 5
+    dz: 60
+    body:
+      w: 0.8
+      x: 2
+    texture: images/p3_item_lightposts_002.gif
+  - x: 12
+    from: 0
+    to: 100000
+    h: 3.5		
+    w: 1.8
+    dz: 120
+    body:
+      w: 1.1
+      x: 0
+    texture: images/p3_item_garbagecan_001.gif
+#### ALEATORIOS
+
+random_objects:
+#### IZQUIERDA
+  left:
+#### EDIFICIO 1
+  - length: 250
+    objects:
+    - x: -35
+      h: 35
+      w: 40
+      dz: 45
+      body:
+        w: 37.5
+        x: 0
+      texture: images/p3_item_buildings_001.gif
+    - x: -75
+      h: 35
+      w: 40
+      dz: 45
+      body:
+        w: 37.5
+        x: 0
+      texture: images/p3_item_buildings_001.gif
+    - x: -130
+      h: 85
+      w: 70
+      dz: 61
+      body:
+        w: 70
+        x: 0
+      texture: images/p3_item_backbuildings_004.gif
+#### EDIFICIO 2
+  - length: 250
+    objects:
+    - x: -35
+      h: 35
+      w: 40
+      dz: 45
+      body:
+        w: 37.5
+        x: 0
+      texture: images/p3_item_buildings_002.gif
+    - x: -75
+      h: 35
+      w: 40
+      dz: 45
+      body:
+        w: 37.5
+        x: 0
+      texture: images/p3_item_buildings_002.gif
+    - x: -130
+      h: 85
+      w: 70
+      dz: 61
+      body:
+        w: 70
+        x: 0
+      texture: images/p3_item_backbuildings_004.gif
+#### EDIFICIO 3
+  - length: 250
+    objects:
+    - x: -35
+      h: 35
+      w: 40
+      dz: 45
+      body:
+        w: 37.5
+        x: 0
+      texture: images/p3_item_buildings_004.gif
+    - x: -75
+      h: 50
+      w: 40
+      dz: 45
+      body:
+        w: 37.5
+        x: 0
+      texture: images/p3_item_buildings_004.gif
+    - x: -130
+      h: 85
+      w: 70
+      dz: 61
+      body:
+        w: 70
+        x: 0
+      texture: images/p3_item_backbuildings_004.gif
+#### EDIFICIOS LEJANOS
+  - length: 500
+    objects:
+    - x: -90
+      h: 20
+      w: 65
+      dz: 50
+      body:
+        w: 65
+        x: 0
+      texture: images/p3_item_backbuildings2_005.gif
+#### DERECHA
+  right:
+#### DUNAS
+  - length: 500
+    objects:
+    - x: 18
+      h: 3
+      w: 18
+      dz: 40
+      body:
+        w: 3
+        x: 0
+      texture: images/p3_item_sanddunes_001.gif
+#### SOMBRILLAS
+  - length: 500
+    objects:
+    - x: 18
+      h: 3
+      w: 3.5
+      dz: 60
+      body:
+        w: 2
+        x: 0
+      texture: images/p3_item_beachers_001.gif
+    - x: 18
+      h: 3
+      w: 3.5
+      dz: 110
+      body:
+        w: 2
+        x: 0
+      texture: images/p3_item_beachers_002.gif
+    - x: 18
+      h: 3
+      w: 3.5
+      dz: 160
+      body:
+        w: 2
+        x: 0
+      texture: images/p3_item_beachers_003.gif

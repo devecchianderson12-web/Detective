@@ -1,0 +1,180 @@
+min_speed: 90
+min_distance: 90
+max_distance: 400
+cars:
+- width: 2 # Este es el ancho del cuerpo del auto, el que se usa para las colisiones
+  engine: 
+    sound: sounds/p3_traffic_1.wav
+    volume: 0.8
+  textures:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_traffic1_pos_001.gif
+      height: 3.4
+      width: 4.3
+  - to: 15
+    left: 
+      texture: images/p3_car_traffic1_pos_002.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic1_pos_004.gif
+      height: 3.4
+      width: 4.3
+  - to: 90
+    left: 
+      texture: images/p3_car_traffic1_pos_003.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic1_pos_005.gif
+      height: 3.4
+      width: 4.3
+- width: 2 # Este es el ancho del cuerpo del auto, el que se usa para las colisiones
+  engine: 
+    sound: sounds/p3_traffic_1.wav
+    volume: 0.8
+  textures:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_traffic4_pos_001.gif
+      height: 3.4
+      width: 4.3
+  - to: 15
+    left: 
+      texture: images/p3_car_traffic4_pos_002.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic4_pos_004.gif
+      height: 3.4
+      width: 4.3
+  - to: 90
+    left: 
+      texture: images/p3_car_traffic4_pos_003.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic4_pos_005.gif
+      height: 3.4
+      width: 4.3
+#
+#
+- width: 2 # Este es el ancho del cuerpo del auto, el que se usa para las colisiones
+  engine: 
+    sound: sounds/p3_traffic_2.wav
+    volume: 0.5
+  textures:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_traffic2_pos_001.gif
+      height: 3.4
+      width: 4.3
+  - to: 15
+    left: 
+      texture: images/p3_car_traffic2_pos_002.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic2_pos_004.gif
+      height: 3.4
+      width: 4.3
+  - to: 90
+    left: 
+      texture: images/p3_car_traffic2_pos_003.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic2_pos_005.gif
+      height: 3.4
+      width: 4.3
+#
+#
+- width: 2 # Este es el ancho del cuerpo del auto, el que se usa para las colisiones
+  engine: 
+    sound: sounds/p3_traffic_2.wav
+    volume: 0.5
+  textures:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_traffic3_pos_001.gif
+      height: 3.4
+      width: 4.3
+  - to: 15
+    left: 
+      texture: images/p3_car_traffic3_pos_002.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic3_pos_004.gif
+      height: 3.4
+      width: 4.3
+  - to: 90
+    left: 
+      texture: images/p3_car_traffic3_pos_003.gif
+      height: 3.4
+      width: 4.3
+    right: 
+      texture: images/p3_car_traffic3_pos_005.gif
+      height: 3.4
+      width: 4.3
+#
+#
+- width: 3.5 # Este es el ancho del cuerpo del auto, el que se usa para las colisiones
+  engine: 
+    sound: sounds/p3_traffic_3.wav
+    volume: 0.8
+  textures:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_traffic5_pos_001.gif
+      height: 9
+      width: 8
+  - to: 15
+    left: 
+      texture: images/p3_car_traffic5_pos_002.gif
+      height: 9
+      width: 8
+    right: 
+      texture: images/p3_car_traffic5_pos_004.gif
+      height: 9
+      width: 8
+  - to: 90
+    left: 
+      texture: images/p3_car_traffic5_pos_003.gif
+      height: 9
+      width: 8
+    right: 
+      texture: images/p3_car_traffic5_pos_005.gif
+      height: 9
+      width: 8
+#
+#
+- width: 3.5 # Este es el ancho del cuerpo del auto, el que se usa para las colisiones
+  engine: 
+    sound: sounds/p3_traffic_3.wav
+    volume: 0.8
+  textures:
+  - to: 8 # Este valor es el angulo que tiene esta imagen vista desde frente con respecto al eje Oz (hacia el fondo), esta en grados
+    both: 
+      texture: images/p3_car_traffic6_pos_001.gif
+      height: 9
+      width: 8
+  - to: 15
+    left: 
+      texture: images/p3_car_traffic6_pos_002.gif
+      height: 9
+      width: 8
+    right: 
+      texture: images/p3_car_traffic6_pos_004.gif
+      height: 9
+      width: 8
+  - to: 90
+    left: 
+      texture: images/p3_car_traffic6_pos_003.gif
+      height: 9
+      width: 8
+    right: 
+      texture: images/p3_car_traffic6_pos_005.gif
+      height: 9
+      width: 8
