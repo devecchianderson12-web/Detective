@@ -34,21 +34,24 @@ def load_data(file_name, field_sep=';', throw_exception=True, compressed=True, f
 
 def save_data(file_name, data, field_sep=';', compress=True):
     full_name = os.path.join(external.data_path, 'data', file_name)
-    try:
-        file = open(full_name, 'wb')
-        if compress:
-            content = ('\n').join([field_sep.join([l.strip() for l in line]) for line in data])
-            compresed_content = zlib.compress(content.encode('latin-1', 'replace'))
-            file.write(b'DAT!' + compresed_content)
-        else:
-            content = ('\r\n').join([field_sep.join(line) for line in data])
-            file.write(content.encode('latin-1', 'replace'))
-        file.close()
-    except Exception as message:
-        print(('Cannot save data file:', full_name))
-        raise SystemExit(message)
-
-    return
+    if compress:
+        content = '\n'.join([field_sep.join([l.strip() for l in line]) for line in data])
+        raw = b'DAT!' + zlib.compress(content.encode('latin-1', 'replace'))
+    else:
+        content = '\r\n'.join([field_sep.join(line) for line in data])
+        raw = content.encode('latin-1', 'replace')
+    # si el archivo está bloqueado un instante (antivirus, otra escritura) se reintenta; una partida que no
+    # se pudo guardar no debe cerrar el juego
+    import time
+    for attempt in range(5):
+        try:
+            with open(full_name, 'wb') as file:
+                file.write(raw)
+            return
+        except OSError as message:
+            error = message
+            time.sleep(0.05 * (attempt + 1))
+    print(('Cannot save data file:', full_name, error))
 
 
 def load_sound(file_name):

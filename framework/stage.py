@@ -17,7 +17,7 @@ def _touch_text_events(events):
             continue
         elif e.type in (pygame.KEYDOWN, pygame.KEYUP) and e.key == pygame.K_AC_BACK:
             # botón "atrás" de Android = Escape (cierra diálogos como en la PC)
-            out.append(pygame.event.Event(e.type, key=pygame.K_ESCAPE, mod=0, unicode='', scancode=0))
+            out.append(pygame.event.Event(e.type, key=pygame.K_ESCAPE, mod=0, unicode='\x1b', scancode=0))
         else:
             out.append(e)
     return out
