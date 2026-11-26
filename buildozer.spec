@@ -14,7 +14,7 @@ presplash.filename = %(source.dir)s/android_presplash.png
 android.presplash_color = #000000
 android.api = 34
 android.minapi = 24
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a, armeabi-v7a, x86_64
 android.accept_sdk_license = True
 p4a.bootstrap = sdl2
 # versión estable de python-for-android: la rama master usa Python 3.14 y su receta de pygame no compila
