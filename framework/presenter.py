@@ -111,7 +111,7 @@ class Presenter:
             self.gear = (self.rect.right + margin // 2, r + int(H * 0.04), r)
         else:
             r = int(min(self.rect.h * 0.035, 40))
-            self.gear = (self.rect.right - r - 6, self.rect.top + r + 6, r)
+            self.gear = (self.rect.right - r - 16, self.rect.top + r + 14, r)
 
     def to_logical(self, x, y):
         r = self.rect
