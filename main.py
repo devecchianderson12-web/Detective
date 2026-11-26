@@ -36,8 +36,35 @@ def show_crash(text):
         traceback.print_exc()
 
 
+def android_absolute_paths():
+    # En Android, SDL busca las rutas relativas dentro del APK (assets) y no en la carpeta de la app:
+    # pygame no encontraba "sounds/..." ni "images/...". Se pasan a rutas absolutas.
+    if 'ANDROID_ARGUMENT' not in os.environ and 'ANDROID_PRIVATE' not in os.environ:
+        return
+    import pygame
+
+    def absolute(func):
+        def wrapper(path, *args, **kwargs):
+            if isinstance(path, str) and not os.path.isabs(path):
+                path = os.path.abspath(path)
+            return func(path, *args, **kwargs)
+        return wrapper
+    pygame.image.load = absolute(pygame.image.load)
+    pygame.mixer.Sound = absolute(pygame.mixer.Sound)
+    pygame.mixer.music.load = absolute(pygame.mixer.music.load)
+    font_class = pygame.font.Font
+
+    class Font(font_class):
+        def __init__(self, path, *args, **kwargs):
+            if isinstance(path, str) and not os.path.isabs(path):
+                path = os.path.abspath(path)
+            font_class.__init__(self, path, *args, **kwargs)
+    pygame.font.Font = Font
+
+
 def main():
     g = None
+    android_absolute_paths()
     try:
         from framework import py2compat
         builtins._div = py2compat.div   # "/" con semántica de Python 2 (ver re/fixdiv.py)

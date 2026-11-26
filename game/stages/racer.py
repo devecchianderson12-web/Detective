@@ -709,7 +709,6 @@ class Racer:
         self.corner_slow = float(corn.get('slow', 0.55))
         self.corner_fast = float(corn.get('fast', 0.48))
         self.corner_speed = float(corn.get('speed', 4.5))
-        self.max_corner_speed = float(cd.get('max_cornering_speed', 100))
         self.max_wheels_speed = float(cd.get('max_wheels_speed', 100))
         self.min_material_speed = float(cd.get('min_material_effect_speed', 20))
         self.sprites = []
@@ -811,7 +810,8 @@ class Racer:
         self.speed = 0.0
         self.gear = 0
         self.steer = 0.0
-        self.road_dx = 0.0
+        self.road_tan = 0.0
+        self.car_tan = 0.0
         self.time = 0.0
         self.state = 0              # 0 carrera, 1 atrapando, 2 sin combustible, 3 cartel final, 4 salir
         self.won = False
@@ -999,14 +999,15 @@ class Racer:
         elif self.steer:
             d = rate * dt
             self.steer = 0.0 if abs(self.steer) <= d else self.steer - math.copysign(d, self.steer)
-        f = min(1.0, self.speed / self.max_corner_speed)
-        corner = self.corner_slow + (self.corner_fast - self.corner_slow) * f
-        # RE: cornering_displacement = atan(v·dt·k)·(cornering·volante)
-        lateral = math.atan(self.speed * dt * 0.35) * corner * self.steer * 0.9
+        # RE: PlayerCar::cornering_displacement = atan(v·dt·slow)·(fast·volante)
+        lateral = math.atan(self.speed * dt * self.corner_slow) * self.corner_fast * self.steer
         dz = self.speed * dt
-        # la curva empuja el auto hacia afuera
+        # RE: el auto sigue la tangente del camino con retraso (0.25·anterior + 0.75·actual): en las curvas
+        # se abre un poco hacia afuera
         curv = self.track.curvature(self.z)
-        lateral -= curv * dz * min(1.0, self.speed / 160.0) * 2.2
+        self.road_tan += curv * dz
+        self.car_tan = 0.25 * self.car_tan + 0.75 * self.road_tan
+        lateral += (self.car_tan - self.road_tan) * dz
         if self.crash_t > 0:
             self.crash_t -= dt
             lateral += self.crash_vx * dt
@@ -1031,8 +1032,7 @@ class Racer:
                     self.speed = max(0.0, self.speed - (1 + self.restitution) * (self.speed - c.speed))
                     if self.snd_light_crash:
                         self.snd_light_crash.play()
-                    if self.speed > 40 or abs(self.steer) > 0.6:
-                        self.hard_crash(1.0 if new_x > c.x else -1.0)
+                    self.steer = 0.0
                     c.z = self.z + self.car_length * 0.6 + 0.5
                     dz = 0.0
         self.x = new_x
@@ -1060,17 +1060,21 @@ class Racer:
             t.speed = max(0.0, t.speed - 40 * dt)
         ahead = [c for c in self.traffic if 0 < c.z - t.z < 70 and abs(c.x - t.target_x) < 3]
         if ahead and self.state in (0, 2):
-            other = [l for l in self.lanes if abs(l - t.target_x) > 1]
-            if other:
-                t.target_x = other[0]
+            # esquiva por el otro carril sólo si está libre; si no, se queda detrás del auto
+            for lane in self.lanes:
+                if abs(lane - t.target_x) > 1 and not any(-12 < c.z - t.z < 70 and abs(c.x - lane) < 3 for c in self.traffic):
+                    t.target_x = lane
+                    break
+            else:
+                near = min(ahead, key=lambda c: c.z)
+                if near.z - t.z < 25:
+                    t.speed = min(t.speed, near.speed)
         if t.x != t.target_x:
             d = self.thief_side_speed * dt
             t.x = t.target_x if abs(t.target_x - t.x) <= d else t.x + math.copysign(d, t.target_x - t.x)
         t.z += t.speed * dt
         for c in self.traffic:
             c.z += c.speed * dt
-            if 0 < t.z - c.z < 6 and abs(c.x - t.x) < 2.5:
-                c.z = t.z - 6
 
         dist = t.z - self.z
         if self.state == 0:
@@ -1408,11 +1412,11 @@ class Racer:
             p.add('accel')
             target = self.thief.x
             for c in self.traffic:
-                if 0 < c.z - self.z < 45 and abs(c.x - target) < 3:
+                if 0 < c.z - self.z < 90 and abs(c.x - target) < 3:
                     target = -c.x
-            if self.x < target - 0.6:
+            if self.x < target - 1.2 + 0.4 * (self.steer > 0):
                 p.add('right')
-            elif self.x > target + 0.6:
+            elif self.x > target + 1.2 - 0.4 * (self.steer < 0):
                 p.add('left')
         p |= self.touch.pressed()
         return p

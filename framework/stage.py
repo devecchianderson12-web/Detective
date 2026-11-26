@@ -3,24 +3,41 @@ import os as _os
 IS_ANDROID = 'ANDROID_ARGUMENT' in _os.environ or 'ANDROID_PRIVATE' in _os.environ
 
 
+_text_state = {'typed': [], 'text': None}
+
+
 def _touch_text_events(events):
-    """Android: el teclado en pantalla manda TEXTINPUT; se convierte en KEYDOWN con su caracter (como
-    los recibía el juego en la PC) y se ignoran los KEYDOWN de letras para no escribir dos veces."""
+    """Android: pygame 2.1 genera un KEYDOWN propio por cada TEXTINPUT del teclado en pantalla. Con un
+    teclado de verdad (o "adb input") llegan KEYDOWN + TEXTINPUT + ese KEYDOWN extra, y el texto salía
+    duplicado: se descarta el KEYDOWN extra si la misma letra acaba de llegar como tecla real. Además
+    "atrás" se traduce a Escape."""
     if not IS_ANDROID:
         return events
     out = []
+    st = _text_state
+    now = pygame.time.get_ticks()
+    st['typed'] = [t for t in st['typed'] if now - t[1] < 400]
     for e in events:
         if e.type == pygame.TEXTINPUT:
-            for ch in e.text:
-                out.append(pygame.event.Event(pygame.KEYDOWN, key=ord(ch) if ord(ch) < 128 else 0, mod=0, unicode=ch, scancode=0))
-        elif e.type == pygame.KEYDOWN and getattr(e, 'unicode', '') and e.unicode.isprintable():
+            st['text'] = e.text
             continue
-        elif e.type in (pygame.KEYDOWN, pygame.KEYUP) and e.key == pygame.K_AC_BACK:
+        if e.type in (pygame.KEYDOWN, pygame.KEYUP) and e.key == pygame.K_AC_BACK:
             # botón "atrás" de Android = Escape (cierra diálogos como en la PC)
             out.append(pygame.event.Event(e.type, key=pygame.K_ESCAPE, mod=0, unicode='\x1b', scancode=0))
-        else:
-            out.append(e)
+            continue
+        if e.type == pygame.KEYDOWN and getattr(e, 'unicode', '') and e.unicode.isprintable():
+            if st['text'] is not None and e.unicode == st['text'][:1]:
+                st['text'] = None
+                same = [t for t in st['typed'] if t[0] == e.unicode]
+                if same:
+                    st['typed'].remove(same[0])
+                    continue        # KEYDOWN extra de una tecla que ya llegó
+            else:
+                st['typed'].append((e.unicode, now))
+        out.append(e)
     return out
+
+
 from . import assets, engine, sounds
 from pygame.locals import *
 MUSIC_ENDSOUND_EVENT = pygame.locals.USEREVENT
@@ -740,6 +757,19 @@ class Stage():
                     item_stack = [self.__mouse_cursor]
             if item_stack == None:
                 item_stack = self.hit_test_stack(x, y)
+                if IS_ANDROID and not self.__has_click(item_stack):
+                    # el dedo es menos preciso que el mouse: si no se tocó nada clickeable se busca un botón
+                    # a pocos píxeles
+                    for r in (8, 16):
+                        found = None
+                        for dx, dy in ((0, -r), (0, r), (-r, 0), (r, 0), (-r, -r), (r, -r), (-r, r), (r, r)):
+                            stack = self.hit_test_stack(x + dx, y + dy)
+                            if self.__has_click(stack):
+                                found = stack
+                                break
+                        if found is not None:
+                            item_stack = found
+                            break
             if self.__focused_item != None:
                 if self.__focused_item[0] not in item_stack:
                     self.set_focus(None)
@@ -768,7 +798,20 @@ class Stage():
 
             self.__leftmousedown_handlers = []
             self.__update_over_item(x, y)
+        if IS_ANDROID and event.button == 1:
+            # al levantar el dedo no queda nada "debajo del mouse": se apagan los rollovers
+            self.__update_over_item(-1000, -1000)
         return
+
+    @staticmethod
+    def __has_click(item_stack):
+        if not item_stack:
+            return False
+        for item in item_stack:
+            has = getattr(item, 'has_event_handler', None)
+            if has is not None and (has(ItemEvent.CLICK) or has(ItemEvent.DBLCLICK)):
+                return True
+        return False
 
     def __process_mouse_keys(self, event):
         if event.type == KEYDOWN:
@@ -1613,6 +1656,9 @@ class Item():
             self.__events[event] = [
              handler]
         return
+
+    def has_event_handler(self, event):
+        return event in self.__events
 
     def remove_event_handler(self, event, handler):
         if event in self.__events:

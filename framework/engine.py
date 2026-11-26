@@ -291,6 +291,8 @@ class _TestScript:
             elif cmd == 'key':
                 k = getattr(pygame, 'K_' + args[0])
                 pygame.event.post(pygame.event.Event(KEYDOWN, key=k, mod=0, unicode=args[1] if len(args) > 1 else ''))
+                if IS_ANDROID and len(args) > 1 and args[1]:
+                    pygame.event.post(pygame.event.Event(pygame.TEXTINPUT, text=args[1]))   # teclado en pantalla
                 pygame.event.post(pygame.event.Event(KEYUP, key=k, mod=0))
             elif cmd == 'shot':
                 pygame.image.save(self.game.display, args[0])
