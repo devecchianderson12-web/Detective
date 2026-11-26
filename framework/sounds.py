@@ -32,7 +32,7 @@ class VirtualChannel:
         elif self.__prev_channel != None:
             self.__prev_channel.stop()
         self.__prev_channel = self.__curr_channel
-        self.__cross_fade = 50 / float(cross_fade)
+        self.__cross_fade = _div(50 , float(cross_fade))
         sound_len = sound_to_play.get_length()
         if sound_len == 0:
             self.__curr_channel = None

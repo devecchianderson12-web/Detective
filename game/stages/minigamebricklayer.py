@@ -194,8 +194,8 @@ class MinigameBricklayer(Minigame):
             self.layer.remove(piece)
 
         self.grid = [[None for i in range(self.cols)] for j in range(self.rows)]
-        self.piece_width = self.puzzle_image.get_width() / self.cols
-        self.piece_height = self.puzzle_image.get_height() / self.rows
+        self.piece_width = _div(self.puzzle_image.get_width() , self.cols)
+        self.piece_height = _div(self.puzzle_image.get_height() , self.rows)
         for i in range(self.rows):
             for j in range(self.cols):
                 if i != self.rows - 1 or j != self.cols - 1:
@@ -249,7 +249,7 @@ class MinigameBricklayer(Minigame):
         for piece in self.puzzle_pieces:
             piece_pos = piece.row * cols + piece.col
             index = list.index(piece_pos)
-            new_row = index / cols
+            new_row = _div(index , cols)
             new_col = index % cols
             self.grid[new_row][new_col] = piece
 
@@ -258,7 +258,7 @@ class MinigameBricklayer(Minigame):
         return
 
     def perform_random_movements(self, rows, cols, movements, from_row, from_col):
-        matrix = [list(range(i * cols, (i + 1) * cols)) for i in range(rows)]
+        matrix = [[*range(i * cols, (i + 1) * cols)] for i in range(rows)]
         col = cols - 1
         row = rows - 1
         previous_oposite_direction = 1
@@ -307,7 +307,7 @@ class MinigameBricklayer(Minigame):
 
     def generate_random_positions(self, n):
         list = []
-        numbers = list(range(0, n))
+        numbers = [*range(0, n)]
         for i in range(n):
             i = random.choice(numbers)
             numbers.remove(i)
@@ -479,9 +479,9 @@ class MinigameBricklayer(Minigame):
         if self.pause_start_time != None:
             self.pause_total_time += pygame.time.get_ticks() - self.pause_start_time
             self.pause_start_time = None
-        elapsed_time = (pygame.time.get_ticks() - self.start_time - self.pause_total_time) / 1000
+        elapsed_time = _div((pygame.time.get_ticks() - self.start_time - self.pause_total_time) , 1000)
         if elapsed_time <= self.maximum_time:
-            time_score = self.maximum_time_score * (self.maximum_time - elapsed_time) / self.maximum_time
+            time_score = _div(self.maximum_time_score * (self.maximum_time - elapsed_time) , self.maximum_time)
         else:
             time_score = 0
         return [100,
@@ -505,7 +505,7 @@ class MinigameBricklayer(Minigame):
                         break
 
             if len(pictures) == 0:
-                del pictures_seen[0:len(pictures_seen) / 2]
+                del pictures_seen[0:_div(len(pictures_seen) , 2)]
             else:
                 selected_picture = random.choice(pictures)
                 pictures_seen.append(selected_picture.number)

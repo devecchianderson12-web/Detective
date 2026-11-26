@@ -841,18 +841,18 @@ class EndGame:
         self.score_increment = minigame.calculate_score_increment(minigame.SCORE_INCREMENT * 10, final_value, self.scores[0])
         if self.score_item == 3:
             if self.timer_steps != 0:
-                self.score_increment = min(self.score_increment, int(final_value / (self.timer_steps * 0.7)))
+                self.score_increment = min(self.score_increment, int(_div(final_value , (self.timer_steps * 0.7))))
         if self.score_increment == 0:
             increments = 0
         else:
-            increments = final_value / self.score_increment
+            increments = _div(final_value , self.score_increment)
         score_time = int(increments * minigame.SCORE_DELAY)
         loop_length = self.score_loop_sound.get_length() * 1000
-        sound_loops = int((score_time + minigame.SCORE_END_SOUND_DELAY) / loop_length)
+        sound_loops = int(_div((score_time + minigame.SCORE_END_SOUND_DELAY) , loop_length))
         if increments == 0 or self.skip_scores_animation:
             delay_between_update = 0
         else:
-            delay_between_update = max(0, (sound_loops * loop_length - minigame.SCORE_END_SOUND_DELAY) / increments)
+            delay_between_update = max(0, _div((sound_loops * loop_length - minigame.SCORE_END_SOUND_DELAY) , increments))
         if not self.skip_scores_animation:
             self.stage.render()
         self.stage.start_timer('endgame_item_score', delay_between_update, self.update_score, [score_item, score_item_shadow, final_value], False, False)
@@ -861,7 +861,7 @@ class EndGame:
                 if self.skip_scores_animation:
                     timer_delay = 0
                 else:
-                    timer_delay = float(score_time) / self.timer_steps
+                    timer_delay = _div(float(score_time) , self.timer_steps)
                 self.stage.start_timer('engame_score_timer', timer_delay, self.update_timer)
         self.score_channel = pygame.mixer.find_channel()
         self.score_channel.set_volume(assets.SOUND_VOLUME)
@@ -944,7 +944,7 @@ class EndGame:
         self.next = ItemImage(224, 399, self.continue_normal)
         self.next.set_rollover_image(self.continue_rollover, self.rollover_sound)
         self.next.add_event_handler(ItemEvent.CLICK, self.score_continue_click)
-        self.score_layer.add(self.__next__)
+        self.score_layer.add(self.next)
         self.score_continue_visible = True
         if self.skip_scores_animation:
             self.stage.render()
@@ -1139,8 +1139,8 @@ class EndGame:
         range_name = text.to_upper(datamodel.get_range_name(character_progress.range.level))
         range_shadow = ItemText(41, 224, turkey_30, 0, range_name, (0, 0, 0), None, 514, 50, 2, 1)
         self.score_layer.add(range_shadow)
-        range = ItemText(43, 221, turkey_30, 0, range_name, (255, 212, 12), None, 514, 50, 2, 1)
-        self.score_layer.add(range)
+        char_range = ItemText(43, 221, turkey_30, 0, range_name, (255, 212, 12), None, 514, 50, 2, 1)
+        self.score_layer.add(char_range)
         character_name = text.to_upper(character.charinfo.name)
         name_shadow = ItemText(21, 254, turkey_30, 29, character_name, (0, 0, 0), None, 554, 90, 2, 1)
         self.score_layer.add(name_shadow)

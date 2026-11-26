@@ -640,8 +640,8 @@ class Case:
 
     def actual_days(self):
         t = self.time_spend
-        days = int(t / 8) + 1
-        hours = t + -8 * int(t / 8) + 12
+        days = int(_div(t , 8)) + 1
+        hours = t + -8 * int(_div(t , 8)) + 12
         return (days, hours)
 
     def get_turns(self, days, hour):
@@ -656,7 +656,7 @@ class Case:
 
     @classmethod
     def _turns_to_time(self, t):
-        return (int(t / 8) + 1, t % 8 + 12)
+        return (int(_div(t , 8)) + 1, t % 8 + 12)
 
     def get_time_limit(self):
         return self._turns_to_time(self.time_limit)

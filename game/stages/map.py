@@ -192,8 +192,8 @@ class Map(Item):
         return
 
     def get_car_pos(self, dep, car_image):
-        left = dep.center_x - car_image.get_width() / 2
-        top = dep.center_y - car_image.get_height() / 2
+        left = dep.center_x - _div(car_image.get_width() , 2)
+        top = dep.center_y - _div(car_image.get_height() , 2)
         return (
          left, top)
 
@@ -310,7 +310,7 @@ class Map(Item):
         dx = left - self.car.get_left()
         dy = top - self.car.get_top()
         angle = -math.degrees(math.atan2(dy, dx))
-        angle = round(angle / 45) * 45
+        angle = round(_div(angle , 45)) * 45
         current_angle = map.car_angle
         diff = angle - current_angle
         if diff >= 360:

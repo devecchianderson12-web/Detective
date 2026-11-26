@@ -17,7 +17,7 @@ class Poly:
                 if y <= max(y1, y2):
                     if x <= max(x1, x2):
                         if y1 != y2:
-                            xinters = (y - y1) * (x2 - x1) / (y2 - y1) + x1
+                            xinters = _div((y - y1) * (x2 - x1) , (y2 - y1)) + x1
                         if x1 == x2 or x <= xinters:
                             inside = not inside
             x1, y1 = x2, y2
@@ -74,8 +74,8 @@ class Segment:
             self.m = None
             self.n = None
         else:
-            self.m = float(end[1] - start[1]) / dx
-            self.n = float(start[1] * end[0] - end[1] * start[0]) / dx
+            self.m = _div(float(end[1] - start[1]) , dx)
+            self.n = _div(float(start[1] * end[0] - end[1] * start[0]) , dx)
         return
 
     def contains_point(self, x, y):
@@ -98,8 +98,8 @@ class Segment:
 
     def inters_segment(self, s):
         if self.m == s.m and self.n == s.n:
-            x = (self.start[0] + self.end[0]) / 2
-            y = (self.start[1] + self.end[1]) / 2
+            x = _div((self.start[0] + self.end[0]) , 2)
+            y = _div((self.start[1] + self.end[1]) , 2)
         elif self.m == s.m:
             return
         elif self.m == None:
@@ -109,7 +109,7 @@ class Segment:
             x = s.start[0]
             y = self.m * x + self.n
         else:
-            x = (s.n - self.n) / (self.m - s.m)
+            x = _div((s.n - self.n) , (self.m - s.m))
             y = self.m * x + self.n
         if self.contains_point(x, y) and s.contains_point(x, y):
             return (
@@ -148,10 +148,10 @@ class Circle:
             mDdx = -D * dx
             sgndydxsqrtd = sgndy * dx * math.sqrt(d)
             absdysqrtd = abs(dy) * math.sqrt(d)
-            xa = float(Ddy + sgndydxsqrtd) / dr2 + self.center[0]
-            ya = float(mDdx + absdysqrtd) / dr2 + self.center[1]
-            xb = (Ddy - sgndydxsqrtd) / dr2 + self.center[0]
-            yb = (mDdx - absdysqrtd) / dr2 + self.center[1]
+            xa = _div(float(Ddy + sgndydxsqrtd) , dr2) + self.center[0]
+            ya = _div(float(mDdx + absdysqrtd) , dr2) + self.center[1]
+            xb = _div((Ddy - sgndydxsqrtd) , dr2) + self.center[0]
+            yb = _div((mDdx - absdysqrtd) , dr2) + self.center[1]
             if d == 0 or not s.contains_point(xb, yb):
                 if s.contains_point(xa, ya):
                     return [

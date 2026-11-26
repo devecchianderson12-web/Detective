@@ -68,7 +68,11 @@ try:
     is_sugar = True
 except ImportError:
     open_browser = __open_browser_any
-    if 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ:
+    if 'DET_DATA' in os.environ:
+        # pruebas automáticas: cada corrida guarda en su propia carpeta
+        data_path = os.environ['DET_DATA']
+        os.makedirs(os.path.join(data_path, 'data'), exist_ok=True)
+    elif 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ:
         # Android: las partidas se guardan en la carpeta privada de la app (se puede escribir).
         data_path = os.environ.get('ANDROID_PRIVATE', os.getcwd())
         os.makedirs(os.path.join(data_path, 'data'), exist_ok=True)

@@ -695,8 +695,8 @@ class CaseGenerator():
                         if thief.sex == s.thief_sex or s.thief_sex == -1:
                             list_animal_statements.append(s)
 
-        for i in range(3):
-            list_janitor_statements.append(list_animal_statements.pop(list_animal_statements.index(random.choice(list_animal_statements))))
+            for i in range(3):
+                list_janitor_statements.append(list_animal_statements.pop(list_animal_statements.index(random.choice(list_animal_statements))))
 
         added = False
         for i in range(3):
@@ -719,7 +719,7 @@ class CaseGenerator():
 
     def generate_time_limit(self, list_departments):
         proximity_matrix = self.datastore.generate_departments_proximity_matrix()
-        range = self.datastore.user_character_progress.range
+        char_range = self.datastore.user_character_progress.range
         minigame_turns = 1
         thief_lair = 1
         times_resolution = 1
@@ -729,14 +729,14 @@ class CaseGenerator():
             dep_distance = get_travel_turns(self.datastore, [list_departments[i], list_departments[i + 1]])
             travel_turns = travel_turns + dep_distance
 
-        total_turns = int((basic_turns + travel_turns) * range.time_limit_percentage) + 1
+        total_turns = int((basic_turns + travel_turns) * char_range.time_limit_percentage) + 1
         return total_turns
 
     def generate_thiefs(self):
         possible_thieves = self.datastore.list_thieves[:]
         captured_thieves = self.datastore.user_character_progress.captured_thieves
         if len(captured_thieves) == len(possible_thieves):
-            del captured_thieves[0:len(possible_thieves) / 2]
+            del captured_thieves[0:_div(len(possible_thieves) , 2)]
         for t in captured_thieves:
             if t in possible_thieves:
                 possible_thieves.remove(t)
@@ -808,7 +808,7 @@ class CaseGenerator():
         IN_RANGE = True
         OUT_OF_RANGE = False
         proximity_matrix = self.datastore.generate_departments_proximity_matrix()
-        range = self.datastore.user_character_progress.range
+        char_range = self.datastore.user_character_progress.range
         last_dep = last_department_lair
         list_posible_deps = []
         list_deps_to_visit = []
@@ -819,7 +819,7 @@ class CaseGenerator():
             t1 += list_border_deps[i].name + ', '
 
         for d in list_border_deps:
-            if self.department_in_range(proximity_matrix, range, last_dep, d) and not list_deps_to_visit.__contains__(d):
+            if self.department_in_range(proximity_matrix, char_range, last_dep, d) and not list_deps_to_visit.__contains__(d):
                 list_posible_deps.append(d)
 
         for d in list_posible_deps:
@@ -829,29 +829,29 @@ class CaseGenerator():
         for i in range(len(list_posible_deps)):
             t2 += list_posible_deps[i].name + ', '
 
-        if len(list_posible_deps) > range.max_departments:
-            while len(list_posible_deps) > range.max_departments:
+        if len(list_posible_deps) > char_range.max_departments:
+            while len(list_posible_deps) > char_range.max_departments:
                 list_posible_deps.remove(random.choice(list_posible_deps))
 
-        elif len(list_posible_deps) < range.max_departments:
-            list_posible_border_departments = self.generate_posible_departments(proximity_matrix, range, list_deps_to_visit, list_posible_deps, last_dep, IN_RANGE)
-            while len(list_posible_border_departments) > 0 and len(list_posible_deps) < range.max_departments:
+        elif len(list_posible_deps) < char_range.max_departments:
+            list_posible_border_departments = self.generate_posible_departments(proximity_matrix, char_range, list_deps_to_visit, list_posible_deps, last_dep, IN_RANGE)
+            while len(list_posible_border_departments) > 0 and len(list_posible_deps) < char_range.max_departments:
                 dep_selection = list_posible_border_departments.pop(list_posible_border_departments.index(random.choice(list_posible_border_departments)))
-                if len(list_posible_deps) < range.max_departments and not list_posible_deps.__contains__(dep_selection) and not list_deps_to_visit.__contains__(dep_selection):
+                if len(list_posible_deps) < char_range.max_departments and not list_posible_deps.__contains__(dep_selection) and not list_deps_to_visit.__contains__(dep_selection):
                     list_posible_deps.append(dep_selection)
 
-            while len(list_border_deps) > 0 and len(list_posible_deps) < range.max_departments:
+            while len(list_border_deps) > 0 and len(list_posible_deps) < char_range.max_departments:
                 dep_selection = list_border_deps.pop(list_border_deps.index(random.choice(list_border_deps)))
-                if len(list_posible_deps) < range.max_departments and not list_posible_deps.__contains__(dep_selection) and not list_deps_to_visit.__contains__(dep_selection):
+                if len(list_posible_deps) < char_range.max_departments and not list_posible_deps.__contains__(dep_selection) and not list_deps_to_visit.__contains__(dep_selection):
                     list_posible_deps.append(dep_selection)
 
-            while len(list_posible_deps) < range.max_departments:
+            while len(list_posible_deps) < char_range.max_departments:
                 if len(list_posible_deps) == 17 and len(list_deps_to_visit) == 2:
                     break
-                list_posible_border_departments = self.generate_posible_departments(proximity_matrix, range, list_deps_to_visit, list_posible_deps, last_dep, OUT_OF_RANGE)
-                while len(list_posible_border_departments) > 0 and len(list_posible_deps) < range.max_departments:
+                list_posible_border_departments = self.generate_posible_departments(proximity_matrix, char_range, list_deps_to_visit, list_posible_deps, last_dep, OUT_OF_RANGE)
+                while len(list_posible_border_departments) > 0 and len(list_posible_deps) < char_range.max_departments:
                     dep_selection = list_posible_border_departments.pop(list_posible_border_departments.index(random.choice(list_posible_border_departments)))
-                    if len(list_posible_deps) < range.max_departments and not list_posible_deps.__contains__(dep_selection) and not list_deps_to_visit.__contains__(dep_selection):
+                    if len(list_posible_deps) < char_range.max_departments and not list_posible_deps.__contains__(dep_selection) and not list_deps_to_visit.__contains__(dep_selection):
                         list_posible_deps.append(dep_selection)
 
         if self.use_fixed_route:

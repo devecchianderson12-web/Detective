@@ -1,4 +1,7 @@
-import sys, traceback, framework.assets, framework.stats
+import sys, traceback, builtins
+from framework import py2compat
+builtins._div = py2compat.div   # "/" con semántica de Python 2 (ver re/fixdiv.py)
+import framework.assets, framework.stats
 from framework import leveldesigner, stats
 from framework.engine import Game
 from game.stages import case, phase2, accessmenu, startscreen, logotc, presentation, updatemanager

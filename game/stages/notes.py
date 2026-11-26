@@ -1,6 +1,6 @@
 from framework.stage import *
 from framework import assets, animations
-import random
+import random, functools
 LETTER_ROLLOVER_TIMER_KEY = 'show_note_letter_rollover'
 
 class Notes(Item):
@@ -32,59 +32,33 @@ class Notes(Item):
         return
 
     def set_letters_data(self):
-        self.letters_data = [[1, 2, 3, 0, 4, 5, True, 6, 7],
-         [
-          8, 9, 3, 0, 10, 5, True, 11, 7],
-         [
-          12, 13, 3, 0, 14, 5, True, 15, 7],
-         [
-          16, 17, 3, 0, 18, 5, True, 19, 7],
-         [
-          20, 21, 3, 0, 22, 5, True, 23, 7],
-         [
-          24, 25, 3, 0, 26, 5, True, 27, 7],
-         [
-          28, 29, 3, 0, 30, 5, True, 31, 7],
-         [
-          32, 33, 3, 0, 34, 5, True, 35, 7],
-         [
-          36, 37, 3, 0, 38, 5, True, 39, 7],
-         [
-          40, 41, 3, 0, 42, 5, True, 43, 7],
-         [
-          44, 45, 3, 0, 46, 5, True, 47, 7],
-         [
-          48, 49, 3, 0, 50, 5, True, 51, 7],
-         [
-          52, 53, 54, 0, 55, 56, True, 57, 58],
-         [
-          59, 4, 54, 0, 60, 56, True, 61, 58],
-         [
-          62, 63, 54, 0, 64, 56, True, 63, 58],
-         [
-          65, 66, 54, 0, 67, 56, True, 68, 58],
-         [
-          69, 70, 54, 0, 71, 56, True, 70, 58],
-         [
-          72, 73, 54, 0, 17, 56, True, 73, 58],
-         [
-          74, 75, 54, 0, 21, 56, True, 76, 58],
-         [
-          77, 78, 54, 0, 79, 56, True, 80, 58],
-         [
-          81, 82, 54, 0, 83, 56, True, 84, 58],
-         [
-          85, 86, 54, 0, 87, 56, True, 88, 58],
-         [
-          89, 90, 54, 0, 91, 56, True, 90, 58],
-         [
-          92, 93, 54, 0, 94, 56, True, 93, 58],
-         [
-          95, 96, 54, 0, 97, 56, True, 98, 58],
-         [
-          99, 100, 54, 0, 101, 56, True, 102, 58],
-         [
-          103, 104, 54, 0, 105, 56, True, 106, 58]]
+        self.letters_data = [['A', 150, 5, None, 143, 2, True, 152, 13],
+         ['B', 174, 5, None, 167, 2, True, 176, 13],
+         ['C', 200, 5, None, 193, 2, True, 203, 13],
+         ['D', 225, 5, None, 218, 2, True, 227, 13],
+         ['E', 249, 5, None, 242, 2, True, 251, 13],
+         ['F', 271, 5, None, 265, 2, True, 273, 13],
+         ['G', 294, 5, None, 286, 2, True, 295, 13],
+         ['H', 317, 5, None, 310, 2, True, 319, 13],
+         ['I', 338, 5, None, 332, 2, True, 340, 13],
+         ['J', 359, 5, None, 353, 2, True, 363, 13],
+         ['K', 381, 5, None, 374, 2, True, 383, 13],
+         ['L', 402, 5, None, 395, 2, True, 404, 13],
+         ['M', 119, 31, None, 110, 26, True, 120, 37],
+         ['N', 143, 31, None, 135, 26, True, 144, 37],
+         ['Ñ', 165, 31, None, 156, 26, True, 165, 37],
+         ['O', 187, 31, None, 179, 26, True, 188, 37],
+         ['P', 210, 31, None, 202, 26, True, 210, 37],
+         ['Q', 233, 31, None, 225, 26, True, 233, 37],
+         ['R', 257, 31, None, 249, 26, True, 258, 37],
+         ['S', 282, 31, None, 274, 26, True, 283, 37],
+         ['T', 305, 31, None, 297, 26, True, 306, 37],
+         ['U', 328, 31, None, 320, 26, True, 329, 37],
+         ['V', 351, 31, None, 343, 26, True, 351, 37],
+         ['W', 373, 31, None, 365, 26, True, 373, 37],
+         ['X', 398, 31, None, 391, 26, True, 399, 37],
+         ['Y', 418, 31, None, 410, 26, True, 419, 37],
+         ['Z', 441, 31, None, 432, 26, True, 442, 37]]
         return
 
     def set_up(self):
@@ -391,13 +365,13 @@ class Notes(Item):
             letter_image = assets.load_image('p0_notes_' + letter_char + '.jpg')
             letter_item = ItemImage(66, 69, letter_image)
             letter[3] = letter_item
-        if self.selected_letter != None:
-            if self.selected_letter[3] != None:
-                self.layer.remove(self.selected_letter[3])
-            self.layer.add(letter_item)
-            self.selected_letter = letter
-            self.load_letter_notes(letter[0])
-            load_last_page or self.load_letter_page(1)
+        if self.selected_letter != None and self.selected_letter[3] != None:
+            self.layer.remove(self.selected_letter[3])
+        self.layer.add(letter_item)
+        self.selected_letter = letter
+        self.load_letter_notes(letter[0])
+        if not load_last_page:
+            self.load_letter_page(1)
         else:
             last_page = self.load_letter_page(99999)[1]
             self.load_letter_page(last_page)
@@ -417,7 +391,7 @@ class Notes(Item):
             if note_letter == letter:
                 self.letter_notes.append(note)
 
-        self.letter_notes.sort(self.note_compare)
+        self.letter_notes.sort(key=functools.cmp_to_key(self.note_compare))
         return
 
     def get_note_letter(self, note):

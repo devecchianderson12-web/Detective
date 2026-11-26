@@ -19,7 +19,7 @@ class MainMenu:
         self.click_sound = stage.click_sound
         self.rollover_sound = stage.rollover_sound
         self.character_id = characterid.CharacterId(self.rollover_sound)
-        self.accents_translate_table = string.maketrans('áéíóúÁÉÍÓÚ', 'aeiouAEIOU')
+        self.accents_translate_table = str.maketrans('áéíóúÁÉÍÓÚ', 'aeiouAEIOU')
         return
 
     def show_mainmenu(self, overlay, close_callback=None, apply_blind=True):
@@ -335,10 +335,7 @@ class MainMenu:
         self.create_state_rollover_item.set_visible(False)
         self.state_list_layer.add(self.create_state_rollover_item)
         y = 59
-        dep_y = [9, 10, 11, 12, 13, 14, 2, 15, 
-         16, 17, 18, 19, 
-         20, 21, 22, 23, 
-         24, 25, 26]
+        dep_y = [58, 76, 94, 112, 130, 148, 166, 184, 202, 220, 238, 256, 273, 292, 310, 328, 346, 364, 382]
         for i in range(len(departments)):
             dep = departments[i]
             mask = ItemMask(179, dep_y[i], state_rollover_image.get_size())
@@ -579,7 +576,7 @@ class MainMenu:
         self.credits_people_layer = Layer()
         x = 7
         y = 81 + top_margin
-        column_width = 585 / len(text)
+        column_width = _div(585 , len(text))
         height = 295
         additional_fonts = {'t': (title_font, 0)}
         if small_line_font != None:

@@ -82,7 +82,7 @@ class Phase1Content(phase0.PhaseContent):
             else:
                 break
             clue_image = item_found.get_image()
-            icon_item = ItemImage(x - clue_image.get_width() / 2, y - clue_image.get_height() / 2, clue_image)
+            icon_item = ItemImage(x - _div(clue_image.get_width() , 2), y - _div(clue_image.get_height() , 2), clue_image)
             self.clues_found_layer.add(icon_item)
             message = item_found.stage_clue.build_right_department_message(case.last_department_visited)
             text_item = ItemText(204, y - 30, font, 14, message, (0, 0, 0), None, 241, 60, 1, 2)
@@ -808,8 +808,8 @@ class Phase1Content(phase0.PhaseContent):
         return
 
     def show_pin_glow(self, item):
-        left = item.get_left() - (self.pin_glow.get_width() - item.get_width()) / 2 + 5
-        top = item.get_top() - (self.pin_glow.get_height() - item.get_height()) / 2 + 5
+        left = item.get_left() - _div((self.pin_glow.get_width() - item.get_width()) , 2) + 5
+        top = item.get_top() - _div((self.pin_glow.get_height() - item.get_height()) , 2) + 5
         if item.city.flipped:
             left -= 10
         self.pin_glow.set_left(left)

@@ -108,7 +108,7 @@ class MinigameShoptender(Minigame):
         self.timer_line_item = ItemRect(149, 136, 11, 128, None, 0, '', (0, 0, 0), (236,
                                                                                     14,
                                                                                     36))
-        self.adjustement_value = float(self.timer_line_item.get_height()) / self.timer_complete_time
+        self.adjustement_value = _div(float(self.timer_line_item.get_height()) , self.timer_complete_time)
         self.timer_topbar_item = ItemImage(146, 122, timer_topbar_image, None)
         timer_barshadow_item = ItemImage(142, 128, timer_barshadow_image, None)
         timer_front_item = ItemImage(135, 118, timer_front_image, None)
@@ -194,7 +194,7 @@ class MinigameShoptender(Minigame):
     def start_minigame(self, animation_item=None):
         if not self.stage.is_timer_started('timer_shoptender'):
             self.play_music()
-            self.stage.start_timer('timer_shoptender', int(1000 / self.adjustement_value), self.update_timer)
+            self.stage.start_timer('timer_shoptender', int(_div(1000 , self.adjustement_value)), self.update_timer)
             self.timer.play(-1)
         self.build_operation()
         self.start_play_stats_event()
@@ -318,13 +318,13 @@ class MinigameShoptender(Minigame):
     def minigame_handle_event(self, e):
         if e.type == KEYDOWN:
             if self.stage.is_timer_started('timer_shoptender'):
-                if e.str == '+':
+                if e.unicode == '+':
                     self.symbol_click(self.symbol_list[0])
-                elif e.str == '-':
+                elif e.unicode == '-':
                     self.symbol_click(self.symbol_list[1])
-                elif e.str == '*':
+                elif e.unicode == '*':
                     self.symbol_click(self.symbol_list[2])
-                elif e.str == '/':
+                elif e.unicode == '/':
                     self.symbol_click(self.symbol_list[3])
         return
 
@@ -404,9 +404,9 @@ class MinigameShoptender(Minigame):
             n2 = random.randint(1, n1)
             n3 = n1 - n2
         if type_operation == 2:
-            controled_range = max_number_accepted / 2
-            n1 = random.randint(1, controled_range / 2)
-            n2 = random.randint(0, max_number_accepted / n1)
+            controled_range = _div(max_number_accepted , 2)
+            n1 = random.randint(1, _div(controled_range , 2))
+            n2 = random.randint(0, _div(max_number_accepted , n1))
             n3 = n1 * n2
         elif type_operation == 3:
             tries = 1
@@ -415,7 +415,7 @@ class MinigameShoptender(Minigame):
                 remaining = 1
                 while remaining != 0:
                     n2 = random.randint(2, n1)
-                    n3 = n1 / n2
+                    n3 = _div(n1 , n2)
                     remaining = n1 % n2
 
                 if n3 != 1 and n3 != 2:
@@ -431,7 +431,7 @@ class MinigameShoptender(Minigame):
         if n1 * n2 == n3:
             self.operation_correct_answer.append(2)
         if n2 != 0:
-            if n1 / n2 == n3:
+            if _div(n1 , n2) == n3:
                 self.operation_correct_answer.append(3)
         self.number_lines_list[0].set_text(str(n1))
         self.number_lines_list[1].set_text(str(n2))
@@ -439,10 +439,10 @@ class MinigameShoptender(Minigame):
         return
 
     def calculate_solved_score(self):
-        remaining_time = min(self.timer_complete_time, self.timer_line_item.get_height() / self.adjustement_value)
+        remaining_time = min(self.timer_complete_time, _div(self.timer_line_item.get_height() , self.adjustement_value))
         elapsed_time = self.timer_complete_time - remaining_time
         if elapsed_time <= self.average_time:
-            time_score = 142.85 * (self.average_time - elapsed_time) / self.average_time
+            time_score = _div(142.85 * (self.average_time - elapsed_time) , self.average_time)
         else:
             time_score = 0
         return [100,

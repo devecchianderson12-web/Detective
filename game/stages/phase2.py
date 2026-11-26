@@ -477,7 +477,7 @@ class Phase2Content(phase0.PhaseContent):
             (result, hit_test_item) = self.hit_test_over_magnifier(item, args.x, args.y)
             if result == 1:
                 self.stage.set_mouse_cursor(self.magnifier, (
-                 self.magnifier.get_width() / 2, self.magnifier.get_height() / 2), False, False, Rect(88, 65, 648, 535))
+                 _div(self.magnifier.get_width() , 2), _div(self.magnifier.get_height() , 2)), False, False, Rect(88, 65, 648, 535))
                 pygame.event.set_grab(True)
                 self.magnifier_taken = True
                 self.magnifier_take_sound.play()
@@ -1122,11 +1122,11 @@ class Phase2Content(phase0.PhaseContent):
                             return 0
                     else:
                         cells = GRID_SIZE[0] + GRID_SIZE[1]
-                        width = GRID_CELL_WIDTH / 2 * cells
-                        height = GRID_CELL_HEIGHT / 2 * cells
+                        width = _div(GRID_CELL_WIDTH , 2) * cells
+                        height = _div(GRID_CELL_HEIGHT , 2) * cells
                         margin = 5
-                        y0 = GRID_ORIGIN[1] + height - abs(x - GRID_ORIGIN[0]) * height / width
-                        if x < GRID_ORIGIN[0] - width / 2 + margin or x > GRID_ORIGIN[0] + width / 2 - margin or y > y0 - margin:
+                        y0 = GRID_ORIGIN[1] + height - _div(abs(x - GRID_ORIGIN[0]) * height , width)
+                        if x < GRID_ORIGIN[0] - _div(width , 2) + margin or x > GRID_ORIGIN[0] + _div(width , 2) - margin or y > y0 - margin:
                             return 2
                         return 0
                     if isinstance(item, ItemCell):

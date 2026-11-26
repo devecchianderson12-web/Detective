@@ -101,8 +101,8 @@ class CharacterId:
         else:
             self.load_avatar(char_info)
             self.avatar.set_image(self.avatar_image)
-            range = datamodel.get_range_name(char_info.range_level)
-            self.range_text.set_text(range)
+            char_range = datamodel.get_range_name(char_info.range_level)
+            self.range_text.set_text(char_range)
             self.range_item.set_visible(True)
             self.load_range(char_info)
             self.range_item.set_image(self.range_image)

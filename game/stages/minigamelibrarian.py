@@ -104,7 +104,7 @@ class MinigameLibrarian(Minigame):
         self.timer_line_item = ItemRect(97, 118, 11, 128, None, 0, '', (0, 0, 0), (236,
                                                                                    14,
                                                                                    36))
-        self.adjustement_value = float(self.timer_line_item.get_height()) / self.timer_complete_time
+        self.adjustement_value = _div(float(self.timer_line_item.get_height()) , self.timer_complete_time)
         self.timer_topbar_item = ItemImage(94, 104, timer_topbar_image, None)
         timer_barshadow_item = ItemImage(90, 110, timer_barshadow_image, None)
         timer_front_item = ItemImage(83, 100, timer_front_image, None)
@@ -274,7 +274,7 @@ class MinigameLibrarian(Minigame):
             self.reset_text()
         if not self.stage.is_timer_started('timer_librarian'):
             self.play_music()
-            self.stage.start_timer('timer_librarian', int(1000 / self.adjustement_value), self.update_timer)
+            self.stage.start_timer('timer_librarian', int(_div(1000 , self.adjustement_value)), self.update_timer)
             self.timer.play(-1)
         self.start_play_stats_event()
         return
@@ -615,13 +615,13 @@ class MinigameLibrarian(Minigame):
                     self.accept_text()
                 else:
                     valid = True
-                    for c in e.str:
+                    for c in e.unicode:
                         if ord(c) not in list(range(256)):
                             valid = False
                             break
 
                     if valid:
-                        letter = e.str.lower()
+                        letter = e.unicode.lower()
                         if letter in self.letters:
                             self.type_letter(letter)
         Minigame.minigame_handle_event(self, e)
@@ -633,10 +633,10 @@ class MinigameLibrarian(Minigame):
         return
 
     def calculate_solved_score(self):
-        remaining_time = min(self.timer_complete_time, self.timer_line_item.get_height() / self.adjustement_value)
+        remaining_time = min(self.timer_complete_time, _div(self.timer_line_item.get_height() , self.adjustement_value))
         elapsed_time = self.timer_complete_time - remaining_time
         if elapsed_time <= self.average_time:
-            time_score = 128 * (self.average_time - elapsed_time) / self.average_time
+            time_score = _div(128 * (self.average_time - elapsed_time) , self.average_time)
         else:
             time_score = 0
         return [100,

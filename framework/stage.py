@@ -1,4 +1,23 @@
 import gc, os, pygame, math, sys
+import os as _os
+IS_ANDROID = 'ANDROID_ARGUMENT' in _os.environ or 'ANDROID_PRIVATE' in _os.environ
+
+
+def _touch_text_events(events):
+    """Android: el teclado en pantalla manda TEXTINPUT; se convierte en KEYDOWN con su caracter (como
+    los recibía el juego en la PC) y se ignoran los KEYDOWN de letras para no escribir dos veces."""
+    if not IS_ANDROID:
+        return events
+    out = []
+    for e in events:
+        if e.type == pygame.TEXTINPUT:
+            for ch in e.text:
+                out.append(pygame.event.Event(pygame.KEYDOWN, key=ord(ch) if ord(ch) < 128 else 0, mod=0, unicode=ch, scancode=0))
+        elif e.type == pygame.KEYDOWN and getattr(e, 'unicode', '') and e.unicode.isprintable():
+            continue
+        else:
+            out.append(e)
+    return out
 from . import assets, engine, sounds
 from pygame.locals import *
 MUSIC_ENDSOUND_EVENT = pygame.locals.USEREVENT
@@ -127,17 +146,17 @@ class Stage():
             background_layer = None
         else:
             (window_width, window_height) = self.game.get_window_size()
-            background_surface = pygame.Surface((window_width / 2, window_height / 2), pygame.SRCALPHA, 32)
+            background_surface = pygame.Surface((_div(window_width , 2), _div(window_height , 2)), pygame.SRCALPHA, 32)
             background_surface.fill(background_color)
             background_image = assets.Image(background_surface)
             background_layer = Layer()
             background_item = ItemImage(0, 0, background_image)
             background_layer.add(background_item)
-            background_item = ItemImage(window_width / 2, 0, background_image)
+            background_item = ItemImage(_div(window_width , 2), 0, background_image)
             background_layer.add(background_item)
-            background_item = ItemImage(0, window_height / 2, background_image)
+            background_item = ItemImage(0, _div(window_height , 2), background_image)
             background_layer.add(background_item)
-            background_item = ItemImage(window_width / 2, window_height / 2, background_image)
+            background_item = ItemImage(_div(window_width , 2), _div(window_height , 2), background_image)
             background_layer.add(background_item)
             self.add_layer(background_layer)
         if pygame.event.get_grab():
@@ -408,16 +427,16 @@ class Stage():
                     self.__mouse_layer.add(cursor)
             elif self.__mouse_layer != None:
                 self.__mouse_layer.empty()
-            if update_item_pos:
-                if cursor != None and self.__mouse_snap_to_cursor:
+            if update_item_pos and cursor != None:
+                if self.__mouse_snap_to_cursor:
                     if self.__mouse_cursor != None:
                         x = self.__mouse_cursor.get_left() + self.__mouse_pointer[0]
                         y = self.__mouse_cursor.get_top() + self.__mouse_pointer[1]
                         cursor.set_lefttop(x - pointer[0], y - pointer[1])
                 else:
                     (x, y) = pygame.mouse.get_pos()
-                    x = int(x / engine.SCREEN_FACTOR)
-                    y = int(y / engine.SCREEN_FACTOR)
+                    x = int(_div(x , engine.SCREEN_FACTOR))
+                    y = int(_div(y , engine.SCREEN_FACTOR))
                     cursor.set_lefttop(x - pointer[0], y - pointer[1])
             self.__mouse_cursor = cursor
             self.__use_mouse_layer = use_mouse_layer
@@ -457,9 +476,11 @@ class Stage():
                 if data != None:
                     if data[0]:
                         button1 = True
-            (x, y) = button1 or pygame.mouse.get_pos()
-            x = int(x / engine.SCREEN_FACTOR)
-            y = int(y / engine.SCREEN_FACTOR)
+        if not button1:
+            # El botón ya se soltó (un toque rápido): termina en el lugar del toque.
+            (x, y) = self._last_touch_pos if getattr(self, '_last_touch_pos', None) else pygame.mouse.get_pos()
+            x = int(_div(x , engine.SCREEN_FACTOR))
+            y = int(_div(y , engine.SCREEN_FACTOR))
             args = ItemEventArgsMouse(x, y)
             handler(args, True)
         else:
@@ -584,7 +605,7 @@ class Stage():
         mouse_rel = [
          0, 0]
         mouse_motion_args = None
-        for event in pygame.event.get():
+        for event in _touch_text_events(pygame.event.get()):
             processed = False
             if event.type == MOUSEMOTION:
                 mouse_rel[0] += event.rel[0]
@@ -666,7 +687,7 @@ class Stage():
             self.stop_timer(key)
             end_of_set = True
         else:
-            volume = start_volume + (target_volume - start_volume) / fadems * elapsed_time
+            volume = start_volume + _div((target_volume - start_volume) , fadems) * elapsed_time
         if STREAM_MUSIC:
             pygame.mixer.music.set_volume(volume)
             if end_of_set and pause:
@@ -686,8 +707,8 @@ class Stage():
             if self.__mouse_layer != None and not self.__mouse_layer.contains(self.__mouse_cursor):
                 self.__mouse_layer.add(self.__mouse_cursor)
         self.__previous_active = True
-        event = pygame.event.Event(MOUSEMOTION, {'pos': (int(x / engine.SCREEN_FACTOR), int(y / engine.SCREEN_FACTOR)), 'rel': (
-                 int(rel_x / engine.SCREEN_FACTOR), int(rel_y / engine.SCREEN_FACTOR)), 
+        event = pygame.event.Event(MOUSEMOTION, {'pos': (int(_div(x , engine.SCREEN_FACTOR)), int(_div(y , engine.SCREEN_FACTOR))), 'rel': (
+                 int(_div(rel_x , engine.SCREEN_FACTOR)), int(_div(rel_y , engine.SCREEN_FACTOR))), 
            'buttons': buttons})
         (x, y) = event.pos
         item_stack = self.__update_over_item(x, y)
@@ -702,13 +723,14 @@ class Stage():
         return
 
     def __on_mouse_button_down(self, x, y, button):
-        event = pygame.event.Event(MOUSEBUTTONDOWN, {'pos': (int(x / engine.SCREEN_FACTOR), int(y / engine.SCREEN_FACTOR)), 'button': button})
+        event = pygame.event.Event(MOUSEBUTTONDOWN, {'pos': (int(_div(x , engine.SCREEN_FACTOR)), int(_div(y , engine.SCREEN_FACTOR))), 'button': button})
         if event.button == 1:
             item_stack = None
             # Táctil: se toca donde está el dedo (event.pos), no donde quedó el cursor dibujado; el cursor
             # se mueve ahí para que el resto del juego (arrastres, rollovers) lo vea en el mismo lugar.
             x = event.pos[0]
             y = event.pos[1]
+            self._last_touch_pos = (x, y)
             if self.__mouse_cursor != None:
                 self.set_mouse_pos(x, y)
                 if pygame.event.get_grab():
@@ -733,7 +755,7 @@ class Stage():
         return
 
     def __on_mouse_button_up(self, x, y, button):
-        event = pygame.event.Event(MOUSEBUTTONUP, {'pos': (int(x / engine.SCREEN_FACTOR), int(y / engine.SCREEN_FACTOR)), 'button': button})
+        event = pygame.event.Event(MOUSEBUTTONUP, {'pos': (int(_div(x , engine.SCREEN_FACTOR)), int(_div(y , engine.SCREEN_FACTOR))), 'button': button})
         if event.button == 1 and len(self.__leftmousedown_handlers) > 0:
             x = event.pos[0]
             y = event.pos[1]
@@ -854,7 +876,7 @@ class Stage():
     def __update_over_item_callback(self, key, data):
         self.stop_timer(key)
         (x, y) = pygame.mouse.get_pos()
-        self.__update_over_item(int(x / engine.SCREEN_FACTOR), int(y / engine.SCREEN_FACTOR))
+        self.__update_over_item(int(_div(x , engine.SCREEN_FACTOR)), int(_div(y , engine.SCREEN_FACTOR)))
         return
 
     def __update_over_item(self, x, y):
@@ -897,8 +919,8 @@ class Stage():
         pos = pygame.mouse.get_pos()
         if pos != self.__mouse_real_pos or update_mouse:
             self.__mouse_real_pos = pos
-            x = int(pos[0] / engine.SCREEN_FACTOR)
-            y = int(pos[1] / engine.SCREEN_FACTOR)
+            x = int(_div(pos[0] , engine.SCREEN_FACTOR))
+            y = int(_div(pos[1] , engine.SCREEN_FACTOR))
             self.__update_over_item(x, y)
             if self.__mouse_cursor != None:
                 self.__update_mouse_cursor_position(x, y)
@@ -1121,18 +1143,18 @@ class StageIso(Stage):
     def get_rowcol(self, x, y):
         x -= self.__origin[0] * self.__multiplier
         y -= self.__origin[1] * self.__multiplier
-        m = float(-self.__cell_height) / self.__cell_width
-        t1 = y / (2 * m)
-        t2 = x / 2
-        t3 = self.__cell_width * self.__multiplier / 2
-        row = int(math.floor((-t1 - t2) / t3))
-        col = int(math.floor((-t1 + t2) / t3))
+        m = _div(float(-self.__cell_height) , self.__cell_width)
+        t1 = _div(y , (2 * m))
+        t2 = _div(x , 2)
+        t3 = _div(self.__cell_width * self.__multiplier , 2)
+        row = int(math.floor(_div((-t1 - t2) , t3)))
+        col = int(math.floor(_div((-t1 + t2) , t3)))
         return (
          row, col)
 
     def get_xy(self, row, col):
-        x = self.__origin[0] * self.__multiplier + self.__cell_width / 2 * self.__multiplier * (col - row)
-        y = self.__origin[1] * self.__multiplier + self.__cell_height / 2 * self.__multiplier * (row + col + 1)
+        x = self.__origin[0] * self.__multiplier + _div(self.__cell_width , 2) * self.__multiplier * (col - row)
+        y = self.__origin[1] * self.__multiplier + _div(self.__cell_height , 2) * self.__multiplier * (row + col + 1)
         return (
          int(x), int(y))
 
@@ -1665,11 +1687,11 @@ class Item():
         x = self.__rollover[2]
         y = self.__rollover[3]
         if x == None:
-            dx = (self.get_width() - item_image.get_width()) / 2
+            dx = _div((self.get_width() - item_image.get_width()) , 2)
         else:
             dx = x
         if y == None:
-            dy = (self.get_height() - item_image.get_height()) / 2
+            dy = _div((self.get_height() - item_image.get_height()) , 2)
         else:
             dy = y
         item_image.set_left(self.__left + dx)
@@ -2046,8 +2068,8 @@ class ItemCell(ItemImage):
         dcol = ph_col - col
         self.__load_center()
         (cell_width, cell_height) = self.__stage.get_grid_cell_size()
-        self.__center = (self.__center[0] - place_holder.x + (dcol - drow) * cell_width / 2,
-         self.__center[1] - place_holder.y + (dcol + drow) * cell_height / 2)
+        self.__center = (self.__center[0] - place_holder.x + _div((dcol - drow) * cell_width , 2),
+         self.__center[1] - place_holder.y + _div((dcol + drow) * cell_height , 2))
         self.set_position(ph_row, ph_col)
         if container_item.__flip_h:
             self.__image = self.__stage.load_item_image(self.__type, self.__state, True)
@@ -2140,7 +2162,7 @@ class ItemCell(ItemImage):
                 self.__center = state_center
         if self.__flip_h:
             self.__center = (
-             self.get_width() / self.__stage.get_grid_multiplier() - self.__center[0], self.__center[1])
+             _div(self.get_width() , self.__stage.get_grid_multiplier()) - self.__center[0], self.__center[1])
         return
 
     def __collide_test_layer(self, row, col, layer):
@@ -2165,8 +2187,8 @@ class ItemCell(ItemImage):
             stage = self.__stage
             (origin, cell_width, cell_height, multiplier) = stage.get_grid_definition()
             center = self.__center
-            left = int((origin[0] + (col - row) * cell_width / 2 - center[0]) * multiplier)
-            top = int((origin[1] + (col + row) * cell_height / 2 - center[1] + cell_height / 2) * multiplier)
+            left = int((origin[0] + _div((col - row) * cell_width , 2) - center[0]) * multiplier)
+            top = int((origin[1] + _div((col + row) * cell_height , 2) - center[1] + _div(cell_height , 2)) * multiplier)
             return (
              left, top)
         return
@@ -2175,9 +2197,9 @@ class ItemCell(ItemImage):
         stage = self.__stage
         (origin, cell_width, cell_height, multiplier) = stage.get_grid_definition()
         center = self.__center
-        d1 = (left / multiplier - origin[0] + center[0]) / (cell_width / 2)
-        d2 = (top / multiplier - origin[1] + center[1] - cell_height / 2) / (cell_height / 2)
-        col = (d1 + d2) / 2
+        d1 = _div((_div(left , multiplier) - origin[0] + center[0]) , (_div(cell_width , 2)))
+        d2 = _div((_div(top , multiplier) - origin[1] + center[1] - _div(cell_height , 2)) , (_div(cell_height , 2)))
+        col = _div((d1 + d2) , 2)
         row = col - d1
         return (
          row, col)
@@ -2227,8 +2249,7 @@ class ItemMask(Item):
 
 
 class ItemText(Item):
-    VALID_UNICODE_CHARS = [
-     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    VALID_UNICODE_CHARS = ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ']
 
     def __init__(self, left, top, font, line_height, text, color=(255, 255, 255), background=None, width=-1, height=-1, h_align=1, v_align=1, additional_fonts=[]):
         self.__width = width
@@ -2351,7 +2372,7 @@ class ItemText(Item):
         return Item.update(self, frame_delay)
 
     def hit_test(self, x, y):
-        adjust = self.__font.get_linesize() / 4
+        adjust = _div(self.__font.get_linesize() , 4)
         editable = self.__edit_mode != None
         return hittest_text(self.__text, x - self.get_left() + adjust, y - self.get_top(), self.__font, self.__additional_fonts, self.__line_height, self.get_width(), self.get_height(), True, self.__h_align, editable, self.__break_text_into)
 
@@ -2395,12 +2416,16 @@ class ItemText(Item):
         return
 
     def on_got_focus(self, set_focus_data):
+        if IS_ANDROID:
+            pygame.key.start_text_input()   # abre el teclado en pantalla
         self.__edit_mode = True
         self.__start_cursor_timer()
         index = set_focus_data
         return [index, True]
 
     def on_lost_focus(self, stage, data):
+        if IS_ANDROID:
+            pygame.key.stop_text_input()
         timer_key = (
          self, 'key_repeat')
         stage.stop_timer(timer_key)
@@ -2411,7 +2436,7 @@ class ItemText(Item):
     def handle_event_focused(self, event, data):
         if event.type == KEYDOWN:
             key = event.key
-            str = event.str
+            str = event.unicode
             stage = self.get_stage()
             if stage != None:
                 timer_key = (
@@ -2564,7 +2589,7 @@ class ItemText(Item):
         elif self.__h_align == 1:
             self.__dx = 0
         elif self.__h_align == 2:
-            self.__dx = (self.__width - text_width) / 2
+            self.__dx = _div((self.__width - text_width) , 2)
         elif self.__h_align == 3:
             self.__dx = self.__width - text_width
         if self.__height == -1:
@@ -2572,7 +2597,7 @@ class ItemText(Item):
         elif self.__v_align == 1:
             self.__dy = 0
         elif self.__v_align == 2:
-            self.__dy = (self.__height - text_height) / 2
+            self.__dy = _div((self.__height - text_height) , 2)
         elif self.__v_align == 3:
             self.__dy = self.__height - text_height
         if self.__alpha != 255:
@@ -2726,8 +2751,8 @@ class ItemRect(Item):
         if self.__background != None:
             target.fill(self.__background, draw_rect)
         if self.__text_surface != None:
-            text_x = draw_rect.left + (draw_rect.width - self.__text_surface.get_width()) / 2
-            text_y = draw_rect.top + (draw_rect.height - self.__text_surface.get_height()) / 2
+            text_x = draw_rect.left + _div((draw_rect.width - self.__text_surface.get_width()) , 2)
+            text_y = draw_rect.top + _div((draw_rect.height - self.__text_surface.get_height()) , 2)
             target.blit_surface(self.__text_surface, (text_x, text_y))
         if self.__border != None:
             target.draw_rect(self.__border, draw_rect)
@@ -2792,16 +2817,16 @@ class ItemObject(ItemImage):
         if n == 0:
             if self.__normal_deceleration != None:
                 if self.__prev_velocity[0] >= 0:
-                    vel_x = max(0, self.__prev_velocity[0] + float(self.__normal_deceleration[0] * frame_delay) / 1000)
+                    vel_x = max(0, self.__prev_velocity[0] + _div(float(self.__normal_deceleration[0] * frame_delay) , 1000))
                 else:
-                    vel_x = min(0, self.__prev_velocity[0] - float(self.__normal_deceleration[0] * frame_delay) / 1000)
+                    vel_x = min(0, self.__prev_velocity[0] - _div(float(self.__normal_deceleration[0] * frame_delay) , 1000))
                 if self.__prev_velocity[1] >= 0:
-                    vel_y = max(0, self.__prev_velocity[1] + float(self.__normal_deceleration[1] * frame_delay) / 1000)
+                    vel_y = max(0, self.__prev_velocity[1] + _div(float(self.__normal_deceleration[1] * frame_delay) , 1000))
                 else:
-                    vel_y = min(0, self.__prev_velocity[1] - float(self.__normal_deceleration[1] * frame_delay) / 1000)
+                    vel_y = min(0, self.__prev_velocity[1] - _div(float(self.__normal_deceleration[1] * frame_delay) , 1000))
         else:
-            vel_x /= n
-            vel_y /= n
+            vel_x = _div(vel_x, n)
+            vel_y = _div(vel_y, n)
         new_left = self.get_left() + vel_x * frame_delay
         new_top = self.get_top() + vel_y * frame_delay
         if self.__test_collision == None or not self.__test_collision(self, new_left, new_top):
@@ -2835,8 +2860,8 @@ class ItemObject(ItemImage):
             return (
              move_data[1], move_data[2])
         elif move_data[0] == 1:
-            vel_x = self.__prev_velocity[0] + float(move_data[1] * frame_delay) / 1000
-            vel_y = self.__prev_velocity[1] + float(move_data[2] * frame_delay) / 1000
+            vel_x = self.__prev_velocity[0] + _div(float(move_data[1] * frame_delay) , 1000)
+            vel_y = self.__prev_velocity[1] + _div(float(move_data[2] * frame_delay) , 1000)
             if move_data[1] >= 0:
                 if vel_x > move_data[3]:
                     vel_x = move_data[3]
@@ -2914,7 +2939,7 @@ def render_text(text, font, additional_fonts, line_height, max_width, max_height
         if h_align == 1:
             line_x = 0
         elif h_align == 2:
-            line_x = max(0, (width - line_surfs[i][0]) / 2)
+            line_x = max(0, _div((width - line_surfs[i][0]) , 2))
         elif h_align == 3:
             line_x = max(0, width - line_surfs[i][0])
         parts_height = line_surfs[i][1]
@@ -2926,14 +2951,14 @@ def render_text(text, font, additional_fonts, line_height, max_width, max_height
             y_adjust = part_surf_data[1][2]
             if part_height >= parts_height:
                 surface.blit(part_surf, (line_x, line_y + y_adjust))
-            elif max_ascent == -1:
-                for part_surf_data2 in line_part_surfs:
-                    ascent = part_surf_data2[1][0].get_ascent()
-                    if ascent > max_ascent:
-                        max_ascent = ascent
-
-            margin = max_ascent - part_surf_data[1][0].get_ascent()
-            surface.blit(part_surf, (line_x, line_y + margin + y_adjust))
+            else:
+                if max_ascent == -1:
+                    for part_surf_data2 in line_part_surfs:
+                        ascent = part_surf_data2[1][0].get_ascent()
+                        if ascent > max_ascent:
+                            max_ascent = ascent
+                margin = max_ascent - part_surf_data[1][0].get_ascent()
+                surface.blit(part_surf, (line_x, line_y + margin + y_adjust))
             line_x += part_surf.get_width()
 
         line_y += parts_height
@@ -3017,6 +3042,9 @@ def draw_cursor_in_surface(surf, x):
     return
 
 
+color = None   # en Python 2 era un global que venía de "from pygame.locals import *" (solo se usa para medir)
+
+
 def hittest_text(text, x, y, font, additional_fonts, line_height, width, height, antialias, h_align, editable=False, break_text_into=None):
     max_line_width = width
     if editable:
@@ -3048,7 +3076,7 @@ def hittest_text(text, x, y, font, additional_fonts, line_height, width, height,
                 line_width += part_font.size(part_text)[0]
 
             if h_align == 2:
-                line_x = (width - line_width) / 2
+                line_x = _div((width - line_width) , 2)
             elif h_align == 3:
                 line_x = width - line_width
         found = False
@@ -3196,29 +3224,30 @@ def wrap_line(line, hit_test, font, line_height, additional_fonts, lines, curren
                             elif line_width + word_width + space_width + extra_width <= max_width:
                                 new_line += ' ' + word
                                 line_width += word_width + space_width
-                            elif new_line != '':
-                                if word != '' and add_space:
-                                    new_line += ' '
-                                line_parts.append((current_color[0], current_font[:], new_line))
-                                line_parts_height = max(line_parts_height, current_font[1])
-                            if len(line_parts) > 0:
-                                lines.append(line_parts)
-                                current_height[0] += line_parts_height
-                            line_parts = []
-                            line_parts_height = 0
-                            if word == '':
-                                new_line = ''
-                                line_width = 0
-                                empty_line = True
                             else:
-                                new_line = word
-                                line_width = word_width
-                            if max_height != -1 and current_height[0] + line_height >= max_height:
-                                text = (' ').join(words[i:])
-                                if next_control != -1:
-                                    text += line[next_control:]
-                                remaining_lines.append(text)
-                                return
+                                if new_line != '':
+                                    if word != '' and add_space:
+                                        new_line += ' '
+                                    line_parts.append((current_color[0], current_font[:], new_line))
+                                    line_parts_height = max(line_parts_height, current_font[1])
+                                if len(line_parts) > 0:
+                                    lines.append(line_parts)
+                                    current_height[0] += line_parts_height
+                                line_parts = []
+                                line_parts_height = 0
+                                if word == '':
+                                    new_line = ''
+                                    line_width = 0
+                                    empty_line = True
+                                else:
+                                    new_line = word
+                                    line_width = word_width
+                                if max_height != -1 and current_height[0] + line_height >= max_height:
+                                    text = (' ').join(words[i:])
+                                    if next_control != -1:
+                                        text += line[next_control:]
+                                    remaining_lines.append(text)
+                                    return
                             add_space = False
 
                         i += 1
@@ -3255,7 +3284,8 @@ def wrap_line(line, hit_test, font, line_height, additional_fonts, lines, curren
                                  font_selected[0], font_selected[1], 0, font_name, None]
                             if current_font[1] == 0:
                                 current_font[1] = current_font[0].get_linesize()
-                start = next_control_end + 1
+                if next_control != -1:
+                    start = next_control_end + 1
 
             if new_line != '':
                 line_parts.append((current_color[0], current_font[:], new_line))
@@ -3272,7 +3302,7 @@ def set_surface_alpha(surface, alpha):
         surface.set_alpha(alpha)
     elif surface.get_width() != 0:
         alpha_matrix = pygame.surfarray.pixels_alpha(surface)
-        mult_alpha = alpha_matrix * (float(alpha) / 255)
+        mult_alpha = alpha_matrix * (_div(float(alpha) , 255))
         alpha_matrix[:] = mult_alpha.astype('b')
     return surface
 
@@ -3638,9 +3668,9 @@ class LayerRace(Layer):
         self.car_pos2 = (300, 0)
         self.car_speed2 = 10
         self.images = [assets.load_image('p2s01i005.png'), assets.load_image('p2s01i005_o.png')]
-        self.positions1 = [13, 14, 15, 16, 17]
+        self.positions1 = [(0, 0), (90, 0), (0, 150), (90, 150), (0, 300)]
         self.image_index1 = 0
-        self.positions2 = [18, 19, 20, 21, 22]
+        self.positions2 = [(500, 0), (410, 0), (500, 150), (410, 150), (500, 300)]
         self.image_index2 = 0
         self.image_step = 0
         return
@@ -3657,9 +3687,9 @@ class LayerRace(Layer):
         self.__sound_braked = braked
         self.__sound_max_speed = max_speed
         self.__sound_engine_on = engine_on
-        self.__const_acceleration = MAX_SPEED / (float(acceleration.get_length()) * 1000)
-        self.__const_normal_deceleration = -MAX_SPEED / (float(deceleration.get_length()) * 1000)
-        self.__const_break_deceleration = -MAX_SPEED / (float(braked.get_length()) * 1000)
+        self.__const_acceleration = _div(MAX_SPEED , (float(acceleration.get_length()) * 1000))
+        self.__const_normal_deceleration = _div(-MAX_SPEED , (float(deceleration.get_length()) * 1000))
+        self.__const_break_deceleration = _div(-MAX_SPEED , (float(braked.get_length()) * 1000))
         return
 
     def set_speed_item(self, item):
@@ -3684,7 +3714,7 @@ class LayerRace(Layer):
                 self.__engine_channel.play(self.__sound_max_speed, -1, 500, 0)
                 self.__speed_mark = MAX_SPEED
             else:
-                offset = float(self.__speed) / MAX_SPEED
+                offset = _div(float(self.__speed) , MAX_SPEED)
                 self.__engine_channel.play(self.__sound_acceleration, 0, 500, offset)
                 self.__speed_mark = speed_mark
         return
@@ -3698,7 +3728,7 @@ class LayerRace(Layer):
                 self.__engine_channel.play(self.__sound_engine_on, -1, 100, 0)
                 self.__speed_mark = 0
             else:
-                offset = 1 - float(self.__speed) / MAX_SPEED
+                offset = 1 - _div(float(self.__speed) , MAX_SPEED)
                 self.__engine_channel.play(self.__sound_deceleration, 0, 500, offset)
                 self.__speed_mark = speed_mark
         return
@@ -3713,7 +3743,7 @@ class LayerRace(Layer):
                 self.__engine_channel.play(self.__sound_engine_on, -1, 100, 0)
                 self.__speed_mark = 0
             else:
-                offset = 1 - float(self.__speed) / MAX_SPEED
+                offset = 1 - _div(float(self.__speed) , MAX_SPEED)
                 self.__engine_channel.play(self.__sound_braked, 0, 50, offset)
                 self.__speed_mark = speed_mark
         return
@@ -3727,7 +3757,7 @@ class LayerRace(Layer):
                 self.__engine_channel.play(self.__sound_engine_on, -1, 100, 0)
                 self.__speed_mark = 0
             else:
-                offset = 1 - float(self.__speed) / MAX_SPEED
+                offset = 1 - _div(float(self.__speed) , MAX_SPEED)
                 self.__engine_channel.play(self.__sound_deceleration, 0, 250, offset)
                 self.__speed_mark = speed_mark
         return
@@ -3742,7 +3772,7 @@ class LayerRace(Layer):
                 if self.__acceleration == 0:
                     cross_fade = 0
                 else:
-                    cross_fade = int((MAX_SPEED - self.__speed) / self.__acceleration)
+                    cross_fade = int(_div((MAX_SPEED - self.__speed) , self.__acceleration))
                 self.__engine_channel.play(self.__sound_max_speed, -1, cross_fade, 0)
                 self.__speed_mark = MAX_SPEED
         elif self.__acceleration < 0:
@@ -3754,12 +3784,12 @@ class LayerRace(Layer):
                 if self.__acceleration == 0:
                     cross_fade = 0
                 else:
-                    cross_fade = int(self.__speed / -self.__acceleration)
+                    cross_fade = int(_div(self.__speed , -self.__acceleration))
                 self.__engine_channel.play(self.__sound_engine_on, -1, cross_fade, 0)
                 self.__speed_mark = 0
         if self.__speed_item != None:
             self.__speed_item.set_text(str(int(self.__speed)))
-        self.__distance_traveled += self.__speed * (float(frame_delay) / 360)
+        self.__distance_traveled += self.__speed * (_div(float(frame_delay) , 360))
         if self.__distance_traveled_item != None:
             self.__distance_traveled_item.set_text(str(int(self.__distance_traveled)))
         Layer.update(self, dirty_rects, frame_delay)

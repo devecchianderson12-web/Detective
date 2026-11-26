@@ -292,7 +292,7 @@ class Phase0Stage(StageIso):
     def get_short_hand_image(self, day_hour, minute_pos, timer_short_hands):
         if day_hour >= 12:
             day_hour -= 12
-        short_pos = day_hour * 4 + minute_pos / 2
+        short_pos = day_hour * 4 + _div(minute_pos , 2)
         if short_pos < 12:
             return timer_short_hands[short_pos]
         elif short_pos < 24:
@@ -331,7 +331,7 @@ class Phase0Stage(StageIso):
         animations.fade_in_item(self.timer_snore, 235)
         animations.start_image_sequence(self.timer_snore, self.timer_snoore_animation, 7, -1)
         (x, y) = self.game.datastore.user_character.avatar_asleep_pos
-        self.timer_snore.set_left(self.character_asleep_icon.get_left() + x - self.timer_snore.get_width() / 2)
+        self.timer_snore.set_left(self.character_asleep_icon.get_left() + x - _div(self.timer_snore.get_width() , 2))
         self.timer_snore.set_top(self.character_asleep_icon.get_top() + y - 2 - self.timer_snoore_animation[0].get_height())
         animations.start_move(self.timer_snore, self.timer_snore.get_left(), self.timer_snore.get_top() - 15, 235)
         return
@@ -647,12 +647,12 @@ class Phase0Stage(StageIso):
         x = 174
         y = 422
         item_image = item.get_image()
-        item_found = ItemImage(x + len(self.items_found) * 60 - item_image.get_width() / 2, y - item_image.get_height() / 2, item_image)
+        item_found = ItemImage(x + len(self.items_found) * 60 - _div(item_image.get_width() , 2), y - _div(item_image.get_height() , 2), item_image)
         item_found.stage_clue = item.stage_clue
         item_mask = ItemMask(x + len(self.items_found) * 60 - 17, y - 17, (34, 34))
         item_mask.item = item_found
         item_mask.add_event_handler(ItemEvent.CLICK, self._clue_click)
-        item_mask.set_rollover(self.glow_image, self.rollover_sound, -item_mask.get_width() / 2 - 2)
+        item_mask.set_rollover(self.glow_image, self.rollover_sound, _div(-item_mask.get_width() , 2) - 2)
         self.options_layer.add(item_mask)
         self.options_layer.add(item_found)
         self.items_found.append(item.stage_clue)
@@ -769,7 +769,7 @@ class Phase0Stage(StageIso):
         close_x = 356
         close_y = 157
         item_image = item.get_image()
-        dialog_item = ItemImage(229 - item_image.get_width() / 2, 180 - item_image.get_height() / 2, item.get_image())
+        dialog_item = ItemImage(229 - _div(item_image.get_width() , 2), 180 - _div(item_image.get_height() , 2), item.get_image())
         dialog.add(dialog_item)
         image = assets.load_image('btn_testigo_x_normal.png')
         rollover_image = assets.load_image('btn_testigo_x_rollover.png')
@@ -833,14 +833,14 @@ class Phase0Stage(StageIso):
         self.map_animation_times += 1
         if self.map_animation_times <= 8:
             self.map_icon.set_lefttop(375, 397)
-            duration = 60 + float(self.map_animation_dy) / 30 * 250
+            duration = 60 + _div(float(self.map_animation_dy) , 30) * 250
             animations.start_move(self.map_icon, 375, 397 - self.map_animation_dy, duration, (0.2,
                                                                                               0.5,
                                                                                               1), None, self.__map_help_animation_down)
         return
 
     def __map_help_animation_down(self, item=None):
-        delay = 40 + float(self.map_animation_dy) / 30 * 160
+        delay = 40 + _div(float(self.map_animation_dy) , 30) * 160
         animations.start_move(self.map_icon, 375, 397, delay, (0.7, 0.5, 1), None, self.__map_help_animation_up)
         return
 
@@ -877,14 +877,14 @@ class Phase0Stage(StageIso):
         self.notes_animation_times += 1
         if self.notes_animation_times <= 8:
             self.notes_icon.set_lefttop(520, 394)
-            duration = 60 + float(self.notes_animation_dy) / 30 * 250
+            duration = 60 + _div(float(self.notes_animation_dy) , 30) * 250
             animations.start_move(self.notes_icon, 520, 394 - self.notes_animation_dy, duration, (0.2,
                                                                                                   0.5,
                                                                                                   1), None, self.__notes_help_animation_down)
         return
 
     def __notes_help_animation_down(self, item=None):
-        delay = 40 + float(self.notes_animation_dy) / 30 * 160
+        delay = 40 + _div(float(self.notes_animation_dy) , 30) * 160
         animations.start_move(self.notes_icon, 520, 394, delay, (0.7, 0.5, 1), None, self.__notes_help_animation_up)
         return
 
@@ -935,14 +935,14 @@ class Phase0Stage(StageIso):
         self.folder_animation_times += 1
         if self.folder_animation_times <= 8:
             self.folder_icon.set_lefttop(445, 398)
-            duration = 60 + float(self.folder_animation_dy) / 30 * 250
+            duration = 60 + _div(float(self.folder_animation_dy) , 30) * 250
             animations.start_move(self.folder_icon, 445, 398 - self.folder_animation_dy, duration, (0.2,
                                                                                                     0.5,
                                                                                                     1), None, self.__folder_help_animation_down)
         return
 
     def __folder_help_animation_down(self, item=None):
-        delay = 40 + float(self.folder_animation_dy) / 30 * 160
+        delay = 40 + _div(float(self.folder_animation_dy) , 30) * 160
         animations.start_move(self.folder_icon, 445, 398, delay, (0.7, 0.5, 1), None, self.__folder_help_animation_up)
         return
 

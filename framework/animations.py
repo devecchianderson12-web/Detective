@@ -71,8 +71,8 @@ def start_image_sequence(item_image, images, fps, loops=0, callback=None):
     key = (
      item_image, 'image_sequence')
     stage.stop_timer(key)
-    milliseconds = 1000 / fps
-    stage.start_timer(key, milliseconds, __timer_image_sequence, [3, images, loops, callback, stage])
+    milliseconds = _div(1000 , fps)
+    stage.start_timer(key, milliseconds, __timer_image_sequence, [0, images, loops, callback, stage])
     return
 
 
@@ -103,8 +103,8 @@ def start_move(item, left, top, duration, acceleration=None, move_marks=None, ca
         if abs(dx_per_mark) < 1 and abs(dy_per_mark) < 1:
             move_marks_data = None
         else:
-            mark_image_dx = item.get_width() / 2 - move_marks.mark_image.get_width() / 2
-            mark_image_dy = item.get_height() / 2 - move_marks.mark_image.get_height() / 2
+            mark_image_dx = _div(item.get_width() , 2) - _div(move_marks.mark_image.get_width() , 2)
+            mark_image_dy = _div(item.get_height() , 2) - _div(move_marks.mark_image.get_height() , 2)
             move_marks_data = [item_left - dx_per_mark, item_top - dy_per_mark, dx_per_mark, dy_per_mark, mark_image_dx, mark_image_dy]
     data = [0, duration, item_left, item_top, left, top, acceleration, move_marks, 
      move_marks_data, callback, stage]
@@ -144,7 +144,7 @@ def start_resize(item_image, image, from_size, to_size, duration, origin_type=1,
     item_image.set_image(resized_image)
     if origin_type == 1:
         orgin_pos = (
-         item_image.get_left() + item_image.get_width() / 2, item_image.get_top() + item_image.get_height() / 2)
+         item_image.get_left() + _div(item_image.get_width() , 2), item_image.get_top() + _div(item_image.get_height() , 2))
     else:
         orgin_pos = None
     data = [
@@ -209,7 +209,7 @@ def blind_layer(layer, direction, area, duration=450, callback=None, lock_ui=Tru
     milliseconds = 20
     data = stage.stop_timer(key)
     (window_width, window_height) = stage.game.get_window_size()
-    dy_factor = float(window_height) / duration
+    dy_factor = _div(float(window_height) , duration)
     if data != None and data[9]:
         stage.unlock_ui()
     if data != None and data[1] == direction and data[0] != None:
@@ -318,7 +318,7 @@ def __timer_fade_in_item(key, data):
         elapsed_time = now - data[1]
     data[1] = now
     to_alpha = data[3]
-    increment = to_alpha * (float(elapsed_time) / data[2])
+    increment = to_alpha * (_div(float(elapsed_time) , data[2]))
     alpha = item.get_alpha()
     alpha += increment
     if alpha < to_alpha:
@@ -341,7 +341,7 @@ def __timer_fade_out_item(key, data):
     else:
         elapsed_time = now - data[1]
     data[1] = now
-    decrement = 255 * (float(elapsed_time) / data[2])
+    decrement = 255 * (_div(float(elapsed_time) , data[2]))
     alpha = item.get_alpha()
     alpha -= decrement
     if alpha >= 0:
@@ -367,7 +367,7 @@ def __timer_fade_in_layer(key, data):
     else:
         elapsed_time = now - data[1]
     data[1] = now
-    increment = 255 * (float(elapsed_time) / data[2])
+    increment = 255 * (_div(float(elapsed_time) , data[2]))
     alpha = layer.get_alpha()
     alpha += increment
     if alpha < 255:
@@ -390,7 +390,7 @@ def __timer_fade_out_layer(key, data):
     else:
         elapsed_time = now - data[1]
     data[1] = now
-    decrement = 255 * (float(elapsed_time) / data[2])
+    decrement = 255 * (_div(float(elapsed_time) , data[2]))
     alpha = layer.get_alpha()
     alpha -= decrement
     if alpha >= 0:
@@ -438,17 +438,17 @@ def __timer_move(key, data):
     left_to = data[4]
     top_to = data[5]
     acceleration = data[6]
-    percentage = min(1, float(elapsed_time) / duration)
+    percentage = min(1, _div(float(elapsed_time) , duration))
     if acceleration == None:
         dx = (left_to - left_from) * percentage
         dy = (top_to - top_from) * percentage
     else:
         (maxvel_t, maxvel_dist, tension) = acceleration
         if percentage <= maxvel_t:
-            factor = math.cos(percentage / maxvel_t * math.pi / 2 - math.pi) + 1
+            factor = math.cos(_div(_div(percentage , maxvel_t) * math.pi , 2) - math.pi) + 1
             factor = math.pow(factor, tension) * maxvel_dist
         else:
-            factor = math.cos((percentage - maxvel_t) / (1 - maxvel_t) * math.pi / 2 - math.pi / 2) + 1 - 1
+            factor = math.cos(_div(_div((percentage - maxvel_t) , (1 - maxvel_t)) * math.pi , 2) - _div(math.pi , 2)) + 1 - 1
             factor = math.pow(factor, tension) * (1 - maxvel_dist) + maxvel_dist
         dx = (left_to - left_from) * factor
         dy = (top_to - top_from) * factor
@@ -500,11 +500,11 @@ def __timer_resize(key, data):
     origin_pos = data[4]
     from_size = data[5]
     to_size = data[6]
-    percentage = min(1, float(elapsed_time) / duration)
+    percentage = min(1, _div(float(elapsed_time) , duration))
     new_size = (int(from_size[0] + (to_size[0] - from_size[0]) * percentage), int(from_size[1] + (to_size[1] - from_size[1]) * percentage))
     if origin_type == 1:
-        new_left = origin_pos[0] - new_size[0] / 2
-        new_top = origin_pos[1] - new_size[1] / 2
+        new_left = origin_pos[0] - _div(new_size[0] , 2)
+        new_top = origin_pos[1] - _div(new_size[1] , 2)
     else:
         new_left = item_image.get_left()
         new_top = item_image.get_top()

@@ -22,7 +22,7 @@ class PresentationStage(Stage):
         web.query(UPDATE_URL, data, callback=self.game.update_manager.web_cb)
         web.send_data(STATS_URL, {'current': VERSION, 'stats': (self.game.stats.get_data())}, compressed=True)
         if error_data:
-            web.send_data(ERRORS_URL, {'current': ('%.2f' % VERSION), 'error': (error_data.decode('utf-8', 'replace'))}, encoding='json', callback=send_error_cb, compressed=True)
+            web.send_data(ERRORS_URL, {'current': ('%.2f' % VERSION), 'error': (error_data if isinstance(error_data, str) else error_data.decode('utf-8', 'replace'))}, encoding='json', callback=send_error_cb, compressed=True)
             del error_data
         self.actual_screen = 0
         self.actual_item = 0
@@ -129,16 +129,16 @@ class PresentationStage(Stage):
                 self.layer.remove(self.layer.items[1])
 
             (window_width, window_height) = self.game.get_window_size()
-            background_surface = pygame.Surface((window_width / 2, window_height / 2), pygame.SRCALPHA, 32)
+            background_surface = pygame.Surface((_div(window_width , 2), _div(window_height , 2)), pygame.SRCALPHA, 32)
             background_surface.fill((0, 0, 0, 180))
             background_image = assets.Image(background_surface)
             background_item = ItemImage(0, 0, background_image)
             self.layer.add(background_item)
-            background_item = ItemImage(window_width / 2, 0, background_image)
+            background_item = ItemImage(_div(window_width , 2), 0, background_image)
             self.layer.add(background_item)
-            background_item = ItemImage(0, window_height / 2, background_image)
+            background_item = ItemImage(0, _div(window_height , 2), background_image)
             self.layer.add(background_item)
-            background_item = ItemImage(window_width / 2, window_height / 2, background_image)
+            background_item = ItemImage(_div(window_width , 2), _div(window_height , 2), background_image)
             self.layer.add(background_item)
         return
 

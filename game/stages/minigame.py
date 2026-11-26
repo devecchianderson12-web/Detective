@@ -226,7 +226,7 @@ class Minigame():
         self.next = ItemImage(219, 322, continue_normal)
         self.next.set_rollover_image(continue_rollover, self.rollover_sound)
         self.next.add_event_handler(ItemEvent.CLICK, self.option_click)
-        self.score_layer.add(self.__next__)
+        self.score_layer.add(self.next)
         self.score_continue_visible = True
         if self.skip_scores_animation:
             self.stage.render()
@@ -240,10 +240,10 @@ class Minigame():
         else:
             final_value = self.total
         self.score_increment = calculate_score_increment(SCORE_INCREMENT, final_value, self.scores[0])
-        increments = final_value / self.score_increment
+        increments = _div(final_value , self.score_increment)
         score_time = int(increments * SCORE_DELAY)
         loop_length = self.score_loop_sound.get_length() * 1000
-        sound_loops = int((score_time + SCORE_END_SOUND_DELAY) / loop_length)
+        sound_loops = int(_div((score_time + SCORE_END_SOUND_DELAY) , loop_length))
         if not self.skip_scores_animation:
             self.score_loop_sound.play(-1)
         self.score_text_value = 0
@@ -258,7 +258,7 @@ class Minigame():
         if increments == 0 or self.skip_scores_animation:
             delay_between_update = 0
         else:
-            delay_between_update = max(0, (sound_loops * loop_length - SCORE_END_SOUND_DELAY) / increments)
+            delay_between_update = max(0, _div((sound_loops * loop_length - SCORE_END_SOUND_DELAY) , increments))
         self.stage.start_timer('minigame_item_score', delay_between_update, self.update_score, score_texts, False, False)
         return
 
@@ -354,7 +354,7 @@ class Minigame():
     def option_click(self, item, args):
         self.stage.render()
         self.continue_sound.play()
-        if item == self.__next__:
+        if item == self.next:
             self.show_next()
         elif item == self.option_text_yes:
             self.stage.close_dialog(self.layer)
@@ -446,7 +446,7 @@ class Minigame():
         self.next = ItemImage(252, 232, image)
         self.next.set_rollover_image(rollover_image, self.rollover_sound)
         self.next.add_event_handler(ItemEvent.CLICK, self.option_click)
-        self.layer.add(self.__next__)
+        self.layer.add(self.next)
         ignore_layers = [
          self.character_layer, self.score_layer]
         if transition and not blind_witness:
@@ -731,7 +731,7 @@ class Minigame():
 
 
 def calculate_score_increment(score_increment, final_value, base_score):
-    increment = max(score_increment, max(final_value / 30, base_score / 30))
+    increment = max(score_increment, max(_div(final_value , 30), _div(base_score , 30)))
     increment -= increment % 10
     increment += 8
     return increment

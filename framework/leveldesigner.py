@@ -209,8 +209,8 @@ class SetItemsStage(StageIso):
                     item_definitions[item_type] = definition
                     item = ItemCell(self, item_type, default_state, False, 0, 0)
                     if new_definition:
-                        center_x = item.get_width() / multiplier / 2
-                        center_y = item.get_height() / multiplier / 2
+                        center_x = _div(_div(item.get_width() , multiplier) , 2)
+                        center_y = _div(_div(item.get_height() , multiplier) , 2)
                         definition.center = (center_x, center_y)
                         item.reload_definition()
                     self.items.append(item)
@@ -249,8 +249,8 @@ class SetItemsStage(StageIso):
                                                 break
 
                                     if state_center == None:
-                                        center_x = item.get_width() / multiplier / 2
-                                        center_y = item.get_height() / multiplier / 2
+                                        center_x = _div(_div(item.get_width() , multiplier) , 2)
+                                        center_y = _div(_div(item.get_height() , multiplier) , 2)
                                         state_center = (center_x, center_y)
                                     clip = os.path.exists('images/' + self.set_name + full_item_type + '$x.png')
                                     states.append(IsoDefState(state_name, state_center, clip))
@@ -260,7 +260,7 @@ class SetItemsStage(StageIso):
             if item_type in self.item_states:
                 item.get_definition().states = self.item_states[item_type]
 
-        self.items.sort(None, key=ItemCell.get_type)
+        self.items.sort(key=ItemCell.get_type)
         return
 
     def notify_set_changed(self):
@@ -445,7 +445,7 @@ class SetItemsStage(StageIso):
 
     def get_adjusted_origin(self):
         return (
-         self.origin[0] / self.zoom, self.origin[1] / self.zoom)
+         _div(self.origin[0] , self.zoom), _div(self.origin[1] , self.zoom))
 
     def handle_event(self, e):
         if e.type == MOUSEBUTTONDOWN:
@@ -900,7 +900,7 @@ class SetItemsStage(StageIso):
                     self.place_holders_layer.add(text)
                     mark_x = self.current_item.get_left() + center[0] * self.zoom + place_holder.x * self.zoom
                     mark_y = self.current_item.get_top() + center[1] * self.zoom + place_holder.y * self.zoom
-                    item = ItemCustomDraw(mark_x - size * self.zoom / 2, mark_y - size * self.zoom / 2, size * self.zoom, size * self.zoom, self.draw_place_holder)
+                    item = ItemCustomDraw(mark_x - _div(size * self.zoom , 2), mark_y - _div(size * self.zoom , 2), size * self.zoom, size * self.zoom, self.draw_place_holder)
                     item.place_holder_index = index
                     item.place_holder_color = text_color
                     self.place_holders_layer.add(item)
@@ -918,8 +918,8 @@ class SetItemsStage(StageIso):
     def draw_place_holder(self, item, target):
         bounds = item.get_bounds()
         color = item.place_holder_color
-        target.fill(color, Rect(bounds.left + bounds.width / 2 - 5 * self.zoom / 2, bounds.top + bounds.height / 2 - self.zoom / 2, 5 * self.zoom, self.zoom))
-        target.fill(color, Rect(bounds.left + bounds.width / 2 - self.zoom / 2, bounds.top + bounds.height / 2 - 5 * self.zoom / 2, self.zoom, 5 * self.zoom))
+        target.fill(color, Rect(bounds.left + _div(bounds.width , 2) - _div(5 * self.zoom , 2), bounds.top + _div(bounds.height , 2) - _div(self.zoom , 2), 5 * self.zoom, self.zoom))
+        target.fill(color, Rect(bounds.left + _div(bounds.width , 2) - _div(self.zoom , 2), bounds.top + _div(bounds.height , 2) - _div(5 * self.zoom , 2), self.zoom, 5 * self.zoom))
         return
 
     def draw_place_holder_height(self, item, target):
@@ -1552,8 +1552,8 @@ def draw_grid(stage, grid_size, mark_center, mark_size, mark_cell):
 
     if mark_center:
         mark_color = (255, 0, 0, 200)
-        target.fill(mark_color, (origin[0] * multiplier - 5 * multiplier / 2, cell_height * multiplier / 2 - multiplier / 2, 5 * multiplier, multiplier))
-        target.fill(mark_color, (origin[0] * multiplier - multiplier / 2, cell_height * multiplier / 2 - 5 * multiplier / 2, multiplier, 5 * multiplier))
+        target.fill(mark_color, (origin[0] * multiplier - _div(5 * multiplier , 2), _div(cell_height * multiplier , 2) - _div(multiplier , 2), 5 * multiplier, multiplier))
+        target.fill(mark_color, (origin[0] * multiplier - _div(multiplier , 2), _div(cell_height * multiplier , 2) - _div(5 * multiplier , 2), multiplier, 5 * multiplier))
     if mark_size != None:
         size_color = (255, 255, 0, 150)
         start_pos = get_grid_pos(0, 0, grid_definition)
@@ -1590,8 +1590,8 @@ def get_grid_pos(row, col, grid_definition):
     cell_width = grid_definition[1]
     cell_height = grid_definition[2]
     multiplier = grid_definition[3]
-    x = origin[0] * multiplier + (col - row) * cell_width * multiplier / 2
-    y = 1 + (row + col) * cell_height * multiplier / 2
+    x = origin[0] * multiplier + _div((col - row) * cell_width * multiplier , 2)
+    y = 1 + _div((row + col) * cell_height * multiplier , 2)
     return (
      x, y)
 

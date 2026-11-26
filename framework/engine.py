@@ -277,10 +277,12 @@ class _TestScript:
         if not self.steps:
             return
         self.frame += 1
-        for f, cmd, args in self.steps:
+        for f, cmd, args in list(self.steps):
             if f != self.frame:
                 continue
-            if cmd == 'click':
+            if cmd in ('down', 'move', 'up'):
+                self._post_mouse(cmd, args)
+            elif cmd == 'click':
                 pos = (int(args[0]) * SCREEN_FACTOR, int(args[1]) * SCREEN_FACTOR)
                 pygame.event.post(pygame.event.Event(MOUSEMOTION, pos=pos, rel=(0, 0), buttons=(0, 0, 0)))
                 pygame.event.post(pygame.event.Event(MOUSEBUTTONDOWN, pos=pos, button=1))
@@ -293,6 +295,49 @@ class _TestScript:
                 pygame.image.save(self.game.display, args[0])
             elif cmd == 'quit':
                 self.game.quit()
+            elif cmd == 'devmenu':
+                # menú de desarrollo del original (teclas 1-7 = fases y minijuegos)
+                self.game.set_development_mode(True)
+                self.game.set_stage(self.game.get_design_stage())
+            elif cmd == 'monkey':
+                self._monkey(int(args[0]), int(args[1]), int(args[2]))
+        stage = self.game._Game__stage
+        name = type(stage).__name__
+        if name != getattr(self, '_last_stage', None):
+            self._last_stage = name
+            print('STAGE', self.frame, name, flush=True)
+
+    def _monkey(self, seed, count, interval):
+        # toques/arrastres al azar para buscar errores (cuadro:monkey:semilla:cantidad:intervalo)
+        import random
+        rnd = random.Random(seed)
+        f = self.frame
+        for i in range(count):
+            f += interval
+            x, y = rnd.randrange(600), rnd.randrange(450)
+            if rnd.random() < 0.25:
+                x2, y2 = rnd.randrange(600), rnd.randrange(450)
+                self.steps.append((f, 'down', [x, y]))
+                for k in range(1, 6):
+                    self.steps.append((f + k, 'move', [x + (x2 - x) * k // 5, y + (y2 - y) * k // 5, 1]))
+                self.steps.append((f + 6, 'up', [x2, y2]))
+            elif rnd.random() < 0.08:
+                ch = rnd.choice('abcdefghijklmnopqrstuvwxyz')
+                self.steps.append((f, 'key', [ch, ch]))
+            else:
+                self.steps.append((f, 'click', [x, y]))
+        self.steps.append((f + 60, 'quit', []))
+
+    def _post_mouse(self, cmd, args):
+        pos = (int(args[0]) * SCREEN_FACTOR, int(args[1]) * SCREEN_FACTOR)
+        if cmd == 'down':
+            pygame.event.post(pygame.event.Event(MOUSEMOTION, pos=pos, rel=(0, 0), buttons=(0, 0, 0)))
+            pygame.event.post(pygame.event.Event(MOUSEBUTTONDOWN, pos=pos, button=1))
+        elif cmd == 'move':
+            pygame.event.post(pygame.event.Event(MOUSEMOTION, pos=pos, rel=(0, 0), buttons=(1, 0, 0)))
+        else:
+            pygame.event.post(pygame.event.Event(MOUSEMOTION, pos=pos, rel=(0, 0), buttons=(1, 0, 0)))
+            pygame.event.post(pygame.event.Event(MOUSEBUTTONUP, pos=pos, button=1))
 
 
 class _ChangeStageDummy():

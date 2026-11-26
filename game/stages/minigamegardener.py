@@ -205,24 +205,13 @@ class MinigameGardener(Minigame):
         while fractions_assigned < n_fractions or n_fractions < n_items and total >= 100:
             if n_fractions == n_items:
                 fraction_sets = [
-                 [
-                  19, 20, 21, 22, 23],
-                 [
-                  24, 25, 26, 27, 28],
-                 [
-                  29, 30, 31, 32, 33],
-                 [
-                  34, 35, 36, 37, 38]]
+                 [('1_4', 25), ('1_4', 25), ('1_5', 20), ('1_5', 20), ('1_10', 10)],
+                 [('2_5', 40), ('3_10', 30), ('1_10', 10), ('1_10', 10), ('1_10', 10)],
+                 [('2_5', 40), ('1_5', 20), ('1_5', 20), ('1_10', 10), ('1_10', 10)],
+                 [('3_10', 30), ('3_10', 30), ('1_5', 20), ('1_10', 10), ('1_10', 10)]]
                 fractions_options = random.choice(fraction_sets)
             else:
-                fractions_options = [
-                 39, 
-                 40, 
-                 41, 
-                 42, 
-                 43, 
-                 44, 
-                 45]
+                fractions_options = [('1_2', 50), ('1_4', 25), ('1_5', 20), ('1_10', 10), ('2_4', 50), ('2_5', 40), ('3_10', 30)]
             fractions_assigned = 0
             percentages = [0 for i in range(n_items)]
             fractions = [None for i in range(n_items)]
@@ -525,11 +514,11 @@ class MinigameGardener(Minigame):
             self.stage.render()
             self.shovel_sound.play()
             if len(new_filled_items) > 0:
-                center_row = float(from_row + to_row) / 2
-                center_col = float(from_col + to_col) / 2
+                center_row = _div(float(from_row + to_row) , 2)
+                center_col = _div(float(from_col + to_col) , 2)
                 (x, y) = self.stage.get_xy(center_row, center_col)
                 separation = 95
-                x -= (len(new_filled_items) - 1) * separation / 2
+                x -= _div((len(new_filled_items) - 1) * separation , 2)
                 y -= 20
                 for item in new_filled_items:
                     if item.percentage != 0:
@@ -581,7 +570,7 @@ class MinigameGardener(Minigame):
         filled_items = []
         total = GRID_SIZE[0] * GRID_SIZE[1]
         for item in self.list:
-            current_percentage = int(float(item.count) / total * 100)
+            current_percentage = int(_div(float(item.count) , total) * 100)
             if current_percentage == item.percentage:
                 filled_items.append(item)
 
@@ -591,7 +580,7 @@ class MinigameGardener(Minigame):
         filled_items = []
         total = GRID_SIZE[0] * GRID_SIZE[1]
         for item in self.list:
-            current_percentage = int(float(item.count) / total * 100)
+            current_percentage = int(_div(float(item.count) , total) * 100)
             if current_percentage == item.percentage:
                 for item_text in item.text_items:
                     if item_text != None:
@@ -630,7 +619,7 @@ class MinigameGardener(Minigame):
         solved = True
         total = GRID_SIZE[0] * GRID_SIZE[1]
         for item in self.list:
-            current_percentage = int(float(item.count) / total * 100)
+            current_percentage = int(_div(float(item.count) , total) * 100)
             if current_percentage != item.percentage:
                 solved = False
                 break
@@ -649,9 +638,9 @@ class MinigameGardener(Minigame):
         if self.pause_start_time != None:
             self.pause_total_time += pygame.time.get_ticks() - self.pause_start_time
             self.pause_start_time = None
-        elapsed_time = (pygame.time.get_ticks() - self.start_time - self.pause_total_time) / 1000
+        elapsed_time = _div((pygame.time.get_ticks() - self.start_time - self.pause_total_time) , 1000)
         if elapsed_time <= self.average_time:
-            time_score = 128 * (self.average_time - elapsed_time) / self.average_time
+            time_score = _div(128 * (self.average_time - elapsed_time) , self.average_time)
         else:
             time_score = 0
         return [100,
@@ -687,8 +676,8 @@ class GoodJobAnimation():
             fraction_str = item.fraction[0]
             self.color_image = assets.load_image('p1_minigame_gardener_goodjob_f' + fraction_str + '.png')
             self.white_image = assets.load_image('p1_minigame_gardener_goodjob_w' + fraction_str + '.png')
-        left = x - self.color_image.get_width() / 2
-        top = y - self.color_image.get_height() / 2
+        left = x - _div(self.color_image.get_width() , 2)
+        top = y - _div(self.color_image.get_height() , 2)
         self.color_item = ItemImage(left, top, self.color_image)
         self.white_item = ItemImage(left, top, self.white_image)
         return
