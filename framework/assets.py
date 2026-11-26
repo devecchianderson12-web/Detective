@@ -101,7 +101,10 @@ def load_surface(file_name):
         print(('Cannot load image:', full_name))
         raise SystemExit(message)
 
-    if image.get_bitsize() == 32:
+    # Las PNG de paleta/RGB con transparencia (colorkey o tRNS) se pasan a alfa por píxel: en Android
+    # el colorkey se pierde al escalar/mezclar y la zona transparente se ve negra.
+    if image.get_bitsize() == 32 or image.get_colorkey() is not None or (
+            image.get_flags() & pygame.SRCALPHA):
         image = image.convert_alpha()
     else:
         image = image.convert()

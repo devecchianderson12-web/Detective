@@ -660,7 +660,7 @@ class Stage():
                 if event.gain:
                     if not self.__previous_active:
                         if self.__use_mouse_layer:
-                            if self.__mouse_layer != None and not self.__mouse_layer.contains(self.__mouse_cursor):
+                            if self.__mouse_layer != None and self.__mouse_cursor != None and not self.__mouse_layer.contains(self.__mouse_cursor):
                                 self.__mouse_layer.add(self.__mouse_cursor)
                         self.__previous_active = True
                 elif self.__previous_active:
@@ -724,7 +724,7 @@ class Stage():
         if data != None:
             buttons = data[0]
         if self.__use_mouse_layer:
-            if self.__mouse_layer != None and not self.__mouse_layer.contains(self.__mouse_cursor):
+            if self.__mouse_layer != None and self.__mouse_cursor != None and not self.__mouse_layer.contains(self.__mouse_cursor):
                 self.__mouse_layer.add(self.__mouse_cursor)
         self.__previous_active = True
         event = pygame.event.Event(MOUSEMOTION, {'pos': (int(_div(x , engine.SCREEN_FACTOR)), int(_div(y , engine.SCREEN_FACTOR))), 'rel': (
