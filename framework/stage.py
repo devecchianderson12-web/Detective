@@ -770,6 +770,8 @@ class Stage():
                         if found is not None:
                             item_stack = found
                             break
+            if IS_ANDROID and item_stack is not None and self.__touch_preview_tap(item_stack, x, y):
+                return
             if self.__focused_item != None:
                 if self.__focused_item[0] not in item_stack:
                     self.set_focus(None)
@@ -799,9 +801,43 @@ class Stage():
             self.__leftmousedown_handlers = []
             self.__update_over_item(x, y)
         if IS_ANDROID and event.button == 1:
-            # al levantar el dedo no queda nada "debajo del mouse": se apagan los rollovers
-            self.__update_over_item(-1000, -1000)
+            preview = getattr(self, '_touch_preview_item', None)
+            if preview is None or self.__over_item is not preview:
+                # al levantar el dedo no queda nada "debajo del mouse": se apagan los rollovers
+                self._touch_preview_item = None
+                self.__update_over_item(-1000, -1000)
+            # si hay un cartel en vista previa (primer toque) se deja visible hasta el próximo toque
         return
+
+    def __touch_preview_tap(self, item_stack, x, y):
+        """Táctil: los elementos con `touch_preview = True` (carteles con rollover, p. ej. los pines de
+        misión) se confirman con dos toques: el primero muestra el cartel, el segundo hace el click.
+        Devuelve True si el toque se consumió como vista previa."""
+        preview = None
+        for item in reversed(item_stack):
+            if getattr(item, 'touch_preview', False) and item.has_event_handler(ItemEvent.CLICK):
+                preview = item
+                break
+        current = getattr(self, '_touch_preview_item', None)
+        if preview is not None and preview is current:
+            # segundo toque sobre el mismo cartel: se confirma
+            self._touch_preview_item = None
+            return False
+        if current is not None and self.__over_item is current:
+            # se tocó otra cosa: se cierra el cartel anterior
+            self.__update_over_item(-1000, -1000)
+        self._touch_preview_item = preview
+        if preview is None:
+            return False
+        if self.__over_item is not preview:
+            self.__update_over_item(x, y)
+            if self.__over_item is not preview and preview.has_event_handler(ItemEvent.MOUSE_ENTER):
+                old = self.__over_item
+                self.__over_item = preview
+                if old is not None:
+                    old.fire_event(ItemEvent.MOUSE_LEAVE, ItemEventArgsMouse(x, y))
+                preview.fire_event(ItemEvent.MOUSE_ENTER, ItemEventArgsMouse(x, y))
+        return True
 
     @staticmethod
     def __has_click(item_stack):

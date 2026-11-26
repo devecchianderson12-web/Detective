@@ -265,6 +265,7 @@ class Phase1Content(phase0.PhaseContent):
         pin.add_event_handler(ItemEvent.MOUSE_ENTER, self.pin_enter)
         pin.add_event_handler(ItemEvent.MOUSE_LEAVE, self.pin_leave)
         pin.add_event_handler(ItemEvent.CLICK, self.pin_click)
+        pin.touch_preview = True  # táctil: 1er toque muestra el cartel, 2do entra
         return
 
     def _pin_clear_events(self, pin):
@@ -718,6 +719,8 @@ class Phase1Content(phase0.PhaseContent):
         tag_item.add_event_handler(ItemEvent.MOUSE_LEAVE, self.target_tag_leave)
         raccoon_mask.add_event_handler(ItemEvent.MOUSE_ENTER, self.target_tag_enter)
         raccoon_mask.add_event_handler(ItemEvent.MOUSE_LEAVE, self.target_tag_leave)
+        tag_item.touch_preview = True
+        raccoon_mask.touch_preview = True
         self.enable_witnesses()
         if fade:
             milliseconds = random.randint(2, 4) * 1000

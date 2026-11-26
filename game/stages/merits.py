@@ -155,6 +155,7 @@ class Merits:
         item.add_event_handler(ItemEvent.MOUSE_ENTER, self.medal_enter)
         item.add_event_handler(ItemEvent.MOUSE_LEAVE, self.medal_leave)
         item.add_event_handler(ItemEvent.CLICK, self.medal_click)
+        item.touch_preview = True
         self.medals_layer.add(item)
         if count > 1:
             self.add_text_with_shadow(self.medals_layer, data[0] + 1, data[1] - 3, font, str(count), (254,
@@ -176,6 +177,7 @@ class Merits:
             item.add_event_handler(ItemEvent.MOUSE_ENTER, self.medal_enter)
             item.add_event_handler(ItemEvent.MOUSE_LEAVE, self.medal_leave)
             item.add_event_handler(ItemEvent.CLICK, self.medal_click)
+            item.touch_preview = True
             self.medals_layer.add(item)
             if count > 1:
                 self.add_text_with_shadow(self.medals_layer, medal_x + count_dx, medal_y + count_dy, font, str(count), (254,
