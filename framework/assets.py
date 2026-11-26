@@ -54,7 +54,16 @@ def save_data(file_name, data, field_sep=';', compress=True):
     print(('Cannot save data file:', full_name, error))
 
 
-def load_sound(file_name):
+_SFX = []   # efectos cargados (para aplicarles el volumen de "Efectos" de los ajustes)
+
+
+def apply_sfx_volume():
+    from . import settings
+    for cs in _SFX:
+        cs.sound.set_volume(cs.base_volume * settings.sfx_volume())
+
+
+def load_sound(file_name, music=False):
     full_name = os.path.join('sounds', file_name)
     try:
         sound = pygame.mixer.Sound(full_name)
@@ -62,11 +71,16 @@ def load_sound(file_name):
         print(('Cannot load sound:', full_name))
         raise SystemExit(message)
 
-    return CustomSound(sound)
+    cs = CustomSound(sound)
+    if not music:
+        from . import settings
+        sound.set_volume(settings.sfx_volume())
+        _SFX.append(cs)
+    return cs
 
 
 def load_music(file_name):
-    return load_sound(file_name)
+    return load_sound(file_name, True)
 
 
 def load_image(file_name):
@@ -141,6 +155,7 @@ class CustomSound(object):
 
     def __init__(self, sound):
         self.sound = sound
+        self.base_volume = 1.0
         return
 
     def play(self, loops=0, maxtime=0):
@@ -161,6 +176,10 @@ class CustomSound(object):
         return
 
     def set_volume(self, value):
+        self.base_volume = value
+        if self in _SFX:
+            from . import settings
+            value = value * settings.sfx_volume()
         self.sound.set_volume(value)
         return
 

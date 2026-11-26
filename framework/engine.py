@@ -45,6 +45,9 @@ class Game():
         self.window = pygame.Surface((600, 450), 0, self.display)
         self.window_rect = self.window.get_rect()
         pygame.display.set_caption(title)
+        from . import presenter, settings
+        settings.load()
+        self.presenter = presenter.install(self)
         self.__stage = None
         self.__design_stage = None
         self.__default_mouse_cursor = default_mouse_cursor
@@ -61,6 +64,7 @@ class Game():
         self.__quit_on_escape = True
         self.__loading_start = None
         self.stats = stats.Stats()
+        self.__show_fps = settings.get('fps')
         if default_mouse_cursor == None or IS_ANDROID:
             # en pantallas táctiles no se dibuja la flecha del mouse (los arrastres siguen mostrando el objeto)
             self.__default_mouse_cursor = None
@@ -75,6 +79,9 @@ class Game():
         test = _TestScript(self)
         while not self.__quit_game:
             self.__frame_delay = self.__clock.tick(40)
+            if self.presenter is not None and self.presenter.is_paused():
+                self.presenter.idle()     # menú de ajustes abierto: el juego queda en pausa
+                continue
             test.step()
             self.__stage.notify_tick()
 

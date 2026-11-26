@@ -38,7 +38,7 @@ def _touch_text_events(events):
     return out
 
 
-from . import assets, engine, sounds
+from . import assets, engine, sounds, settings
 from pygame.locals import *
 MUSIC_ENDSOUND_EVENT = pygame.locals.USEREVENT
 STREAM_MUSIC = False
@@ -368,7 +368,7 @@ class Stage():
                 self.__music_data = (
                  intro, loop)
                 music_channel = pygame.mixer.Channel(0)
-                music_channel.set_volume(1)
+                music_channel.set_volume(settings.music_volume())
                 if intro != None:
                     music_channel.play(intro.sound, 0, 0)
                     music_channel.queue(loop.sound)
@@ -709,12 +709,12 @@ class Stage():
         else:
             volume = start_volume + _div((target_volume - start_volume) , fadems) * elapsed_time
         if STREAM_MUSIC:
-            pygame.mixer.music.set_volume(volume)
+            pygame.mixer.music.set_volume(volume * settings.music_volume())
             if end_of_set and pause:
                 pygame.mixer.music.pause()
         else:
             music_channel = pygame.mixer.Channel(0)
-            music_channel.set_volume(volume)
+            music_channel.set_volume(volume * settings.music_volume())
             if end_of_set and pause:
                 music_channel.pause()
         return

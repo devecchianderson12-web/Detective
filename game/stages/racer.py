@@ -12,6 +12,7 @@ import math, os, random
 import pygame
 from pygame.locals import *
 import yaml
+from framework import settings
 
 DT = 0.032                       # RE: TC::tick cada 0x20 ms
 SCREEN_W, SCREEN_H = 600, 450
@@ -72,7 +73,7 @@ class Assets:
             if pygame.mixer.get_init() and os.path.exists(path):
                 try:
                     snd = pygame.mixer.Sound(path)
-                    snd.set_volume(volume)
+                    snd.set_volume(volume * settings.sfx_volume())
                 except Exception as e:
                     print('racer: no se pudo cargar', path, e)
             self.sounds[key] = snd
@@ -590,6 +591,9 @@ class TouchControls:
 
     @staticmethod
     def finger_pos(event):
+        from framework import presenter
+        if presenter.active is not None:
+            return presenter.active.finger(event)
         # coordenadas normalizadas de la ventana -> coordenadas lógicas (pygame.SCALED con bandas)
         try:
             ww, wh = pygame.display.get_window_size()
@@ -853,7 +857,7 @@ class Racer:
             return False
         try:
             pygame.mixer.music.load(path)
-            pygame.mixer.music.set_volume(float(spec.get('volume', 1)))
+            pygame.mixer.music.set_volume(float(spec.get('volume', 1)) * settings.music_volume())
             pygame.mixer.music.play(loops, start)
             self.music_state = name
             return True
@@ -1028,7 +1032,7 @@ class Racer:
         # choques con el tránsito (RE: rebote con restitución)
         for c in self.traffic:
             if c.z - self.z < self.car_length * 0.6 and c.z - self.z > -1 and abs(new_x - c.x) < (c.width + self.car_width) * 0.5:
-                if self.speed > c.speed:
+                if self.speed > c.speed and not settings.get('ghost'):
                     self.speed = max(0.0, self.speed - (1 + self.restitution) * (self.speed - c.speed))
                     if self.snd_light_crash:
                         self.snd_light_crash.play()
@@ -1091,12 +1095,12 @@ class Racer:
                     self.snd_brake.play()
             elif dist < 0:
                 t.z = self.z + 1.0
-            elif self.time >= self.time_limit:
+            elif self.time >= self.time_limit and not settings.get('ghost'):
                 self.state = 2                                  # RE: sin combustible
                 self.won = False
                 self.sign_no_fuel.start()
                 self.stop_sound('engine')
-            if self.state == 0 and self.time_limit - self.time < self.fuel_warning_time:
+            if self.state == 0 and not settings.get("ghost") and self.time_limit - self.time < self.fuel_warning_time:
                 if not getattr(self, 'fuel_warned', False):
                     self.fuel_warned = True
                     self.sign_low_fuel.start()
@@ -1149,6 +1153,8 @@ class Racer:
         self.update_music()
 
     def hard_crash(self, direction):
+        if settings.get('ghost'):
+            return      # modo fantasma: los choques no hacen nada
         # RE: start_hard_crash: el auto gira y pierde velocidad
         self.crash_t = self.crash_duration
         self.crash_side = 'left' if direction < 0 else 'right'
@@ -1315,7 +1321,7 @@ class Racer:
             if z < 5:
                 scr.blit(img, pos)
         color, fx, fy, fw, fh, fend = self.fuel
-        frac = max(0.0, 1.0 - self.time / self.time_limit)
+        frac = 1.0 if settings.get("ghost") else max(0.0, 1.0 - self.time / self.time_limit)
         bw = int(fw * frac)
         if bw > 0:
             scr.fill(color, (fx, fy, bw, fh))

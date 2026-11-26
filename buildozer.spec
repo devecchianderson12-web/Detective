@@ -9,6 +9,8 @@ version = 1.07
 requirements = python3==3.10.12,hostpython3==3.10.12,pygame,numpy,pyyaml
 orientation = landscape
 fullscreen = 1
+# usar también la zona de la cámara (notch) para cubrir toda la pantalla del celular
+android.display_cutout = shortEdges
 icon.filename = %(source.dir)s/android_icon.png
 presplash.filename = %(source.dir)s/android_presplash.png
 android.presplash_color = #000000
