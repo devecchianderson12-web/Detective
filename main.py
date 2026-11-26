@@ -62,9 +62,30 @@ def android_absolute_paths():
     pygame.font.Font = Font
 
 
+def android_use_cutout():
+    # Android: usar también la zona de la cámara (notch) para que el juego pueda cubrir toda la pantalla
+    if 'ANDROID_ARGUMENT' not in os.environ and 'ANDROID_PRIVATE' not in os.environ:
+        return
+    try:
+        from jnius import autoclass
+        from android.runnable import run_on_ui_thread
+
+        @run_on_ui_thread
+        def apply():
+            activity = autoclass('org.kivy.android.PythonActivity').mActivity
+            window = activity.getWindow()
+            params = window.getAttributes()
+            params.layoutInDisplayCutoutMode = 1   # LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.setAttributes(params)
+        apply()
+    except Exception:
+        traceback.print_exc()
+
+
 def main():
     g = None
     android_absolute_paths()
+    android_use_cutout()
     try:
         from framework import py2compat
         builtins._div = py2compat.div   # "/" con semántica de Python 2 (ver re/fixdiv.py)
