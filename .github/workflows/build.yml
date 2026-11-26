@@ -46,6 +46,9 @@ jobs:
 
       - name: Compilar APK
         run: |
+          # siempre la misma firma: así cada APK nuevo se instala encima del anterior
+          mkdir -p ~/.android
+          cp .github/keystore/debug.keystore ~/.android/debug.keystore
           yes | buildozer android debug
           cp bin/*.apk "$GITHUB_WORKSPACE/Detective.apk"
 
