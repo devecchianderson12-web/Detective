@@ -1,8 +1,8 @@
 from framework.stage import *
-from framework import animations, text, web
+from framework import animations, text
 from framework.animations import BlindDirection
 from game.data import datastore, statcodes, datamodel, serialization
-import random, des
+import random
 from . import minigame, merits
 
 class EndReason:
@@ -507,10 +507,7 @@ class EndGame:
     def continue_with_next(self):
         self.continue_visible = False
         self.hide_layers()
-        k = des.des(datastore.SCORE_KEY, des.CBC, datastore.SCORE_IV, pad=None, padmode=des.PAD_PKCS5)
-        import base64
-        score = base64.b64encode(k.encrypt(str(self.stage.game.datastore.get_highscore_data())))
-        web.send_data(datastore.STATS_URL, {'current': (datastore.VERSION), 'stats': (self.stage.game.stats.get_data()), 'score': score}, compressed=True)
+        # el original cifraba el puntaje (DES) y lo mandaba a un servidor que ya no existe (web.OFFLINE)
         if self.reason != EndReason.ARRIVED_LOCATION or not self.case_solved or not self.caught_thief:
             animations.wait(self.stage, 500, self.restart_game)
         else:

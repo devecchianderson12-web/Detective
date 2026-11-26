@@ -61,7 +61,8 @@ class Game():
         self.__quit_on_escape = True
         self.__loading_start = None
         self.stats = stats.Stats()
-        if default_mouse_cursor == None:
+        if default_mouse_cursor == None or IS_ANDROID:
+            # en pantallas táctiles no se dibuja la flecha del mouse (los arrastres siguen mostrando el objeto)
             self.__default_mouse_cursor = None
         else:
             self.__default_mouse_cursor = assets.load_image(default_mouse_cursor)

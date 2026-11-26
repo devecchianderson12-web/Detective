@@ -1,4 +1,5 @@
-import sys, traceback, builtins
+import sys, traceback, builtins, os
+os.environ.setdefault('SDL_ANDROID_TRAP_BACK_BUTTON', '1')   # Android: "atrás" llega como tecla (Escape) y no cierra la app
 from framework import py2compat
 builtins._div = py2compat.div   # "/" con semántica de Python 2 (ver re/fixdiv.py)
 import framework.assets, framework.stats
